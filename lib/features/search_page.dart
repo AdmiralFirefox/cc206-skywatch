@@ -11,53 +11,61 @@ class SearchPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Column(
-          children: [
-            const Icon(
-              Icons.house,
-              color: Colors.black,
-              size: 40.0,
-              semanticLabel: 'Text to announce in accessibility modes',
-            ),
-            const Text(
-              "SkyWatch",
-              style: TextStyle(
-                fontSize: 25.0,
-                fontWeight: FontWeight.w700,
+        child: Padding(
+          padding: const EdgeInsets.only(
+            left: 45,
+            top: 50,
+            right: 45,
+            bottom: 20,
+          ),
+          child: Column(
+            children: [
+              const Icon(
+                Icons.house,
+                color: Colors.black,
+                size: 40.0,
+                semanticLabel: 'Text to announce in accessibility modes',
               ),
-            ),
-            RichText(
-              text: const TextSpan(
-                text: "Search for a City or Country",
+              const Text(
+                "SkyWatch",
                 style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 25.0,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
-            ),
-            Form(
-              autovalidateMode: AutovalidateMode.always,
-              child: TextFormField(
-                onSaved: (String? value) {},
-              ),
-            ),
-            ElevatedButton(
-              style: TextButton.styleFrom(
-                backgroundColor: Colors.deepOrange,
-              ),
-              onPressed: () {
-                print("Searching...");
-              },
-              child: const Text(
-                'Search Country',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+              RichText(
+                text: const TextSpan(
+                  text: "Search for a City or Country",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
-            ),
-          ],
+              Form(
+                autovalidateMode: AutovalidateMode.always,
+                child: TextFormField(
+                  onSaved: (String? value) {},
+                ),
+              ),
+              ElevatedButton(
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.deepOrange,
+                ),
+                onPressed: () {
+                  print("Searching...");
+                },
+                child: const Text(
+                  'Search Country',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
