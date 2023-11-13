@@ -1,10 +1,6 @@
 import 'package:cc206_skywatch/components/search/search_form.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const SearchPage());
-}
-
 class SearchPage extends StatelessWidget {
   const SearchPage({super.key});
 
