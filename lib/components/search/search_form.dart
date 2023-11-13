@@ -57,6 +57,8 @@ class SearchForm extends StatelessWidget {
                             option,
                             style: const TextStyle(
                               color: Colors.black, // autocomplete color
+                              fontFamily: "Poppins",
+                              fontWeight: FontWeight.w400,
                             ),
                           ),
                         ),
@@ -93,6 +95,7 @@ class SearchForm extends StatelessWidget {
                 hintText: "Search for a City/Country",
                 hintStyle: const TextStyle(
                   color: Colors.black,
+                  fontFamily: "Poppins",
                   fontWeight: FontWeight.w400,
                 ),
                 filled: true,
