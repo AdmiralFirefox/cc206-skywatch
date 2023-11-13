@@ -10,6 +10,7 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   TextEditingController textController = TextEditingController();
   String submittedText = "";
+  bool showError = false;
 
   final List<String> _options = const <String>[
     'New York',
@@ -17,6 +18,13 @@ class _SearchPageState extends State<SearchPage> {
     'Manila',
     'Seoul'
   ];
+
+  String? validateInput(String? value) {
+    if (value!.trim().isEmpty) {
+      return 'Please enter a valid value.';
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -103,6 +111,7 @@ class _SearchPageState extends State<SearchPage> {
                       return TextFormField(
                         controller: textEditingController,
                         focusNode: focusNode,
+                        validator: validateInput,
                         decoration: InputDecoration(
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(5.0),
@@ -128,10 +137,16 @@ class _SearchPageState extends State<SearchPage> {
                           fillColor: Colors.white,
                           suffixIcon: GestureDetector(
                             onTap: () {
-                              setState(() {
-                                submittedText = textEditingController.text;
-                                textEditingController.text = "";
-                              });
+                              if (validateInput(textEditingController.text) ==
+                                  null) {
+                                setState(() {
+                                  submittedText = textEditingController.text;
+                                  textEditingController.text = "";
+                                });
+                                showError = false;
+                              } else {
+                                showError = true;
+                              }
                               focusNode.unfocus();
                             },
                             child: const Icon(Icons.search),
@@ -140,10 +155,15 @@ class _SearchPageState extends State<SearchPage> {
                         textInputAction: TextInputAction.done, // Set it to done
                         // Handle the submission when "Done" is pressed
                         onFieldSubmitted: (value) {
-                          setState(() {
-                            submittedText = value;
-                            textEditingController.text = "";
-                          });
+                          if (validateInput(value) == null) {
+                            setState(() {
+                              submittedText = value;
+                              textEditingController.text = "";
+                            });
+                            showError = false;
+                          } else {
+                            showError = true;
+                          }
                           focusNode.unfocus();
                         },
                       );
