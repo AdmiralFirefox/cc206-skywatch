@@ -1,8 +1,16 @@
 import 'package:cc206_skywatch/components/search/search_form.dart';
 import 'package:flutter/material.dart';
 
-class SearchPage extends StatelessWidget {
+class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
+
+  @override
+  _SearchPageState createState() => _SearchPageState();
+}
+
+class _SearchPageState extends State<SearchPage> {
+  TextEditingController textController = TextEditingController();
+  String submittedText = "";
 
   @override
   Widget build(BuildContext context) {
@@ -24,9 +32,27 @@ class SearchPage extends StatelessWidget {
             right: 15,
             bottom: 20,
           ),
-          child: const Column(
+          child: Column(
             children: [
-              SearchForm(),
+              SearchForm(
+                textController: textController,
+                handleOnTap: () {
+                  setState(() {
+                    submittedText = textController.text;
+                    textController.text = "";
+                  });
+                },
+                handleOnSubmit: (String value) {
+                  setState(() {
+                    submittedText = value;
+                    textController.text = "";
+                  });
+                },
+              ),
+              Text(
+                submittedText,
+                style: const TextStyle(fontSize: 24),
+              ),
             ],
           ),
         ),
