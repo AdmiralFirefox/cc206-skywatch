@@ -26,7 +26,7 @@ class _SearchPageState extends State<SearchPage> {
   TextEditingController textController = TextEditingController();
   String submittedText = "";
   bool isEmpty = false;
-  late Timer _debounce;
+  Timer? _debounceTimer;
 
   List<CountryData> _options = [];
 
@@ -74,18 +74,12 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   // Debounce onChange value
-  @override
-  void initState() {
-    super.initState();
-    _debounce = Timer(const Duration(milliseconds: 500), () {});
-  }
-
   void _onSearchTextChanged(String value) {
-    // Cancel the previous timer to debounce the function
-    _debounce.cancel();
+    if (_debounceTimer != null) {
+      _debounceTimer!.cancel();
+    }
 
-    // Start a new timer
-    _debounce = Timer(const Duration(milliseconds: 500), () {
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
       fetchCountryData(value);
     });
   }
