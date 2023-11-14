@@ -10,7 +10,7 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   TextEditingController textController = TextEditingController();
   String submittedText = "";
-  bool showError = false;
+  bool isEmpty = false;
 
   final List<String> _options = const <String>[
     'New York',
@@ -143,9 +143,9 @@ class _SearchPageState extends State<SearchPage> {
                                   submittedText = textEditingController.text;
                                   textEditingController.text = "";
                                 });
-                                showError = false;
+                                isEmpty = false;
                               } else {
-                                showError = true;
+                                isEmpty = true;
                               }
                               focusNode.unfocus();
                             },
@@ -160,9 +160,9 @@ class _SearchPageState extends State<SearchPage> {
                               submittedText = value;
                               textEditingController.text = "";
                             });
-                            showError = false;
+                            isEmpty = false;
                           } else {
-                            showError = true;
+                            isEmpty = true;
                           }
                           focusNode.unfocus();
                         },
