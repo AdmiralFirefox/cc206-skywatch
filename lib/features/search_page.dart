@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'dart:async';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class CountryData {
@@ -25,6 +26,7 @@ class _SearchPageState extends State<SearchPage> {
   TextEditingController textController = TextEditingController();
   String submittedText = "";
   bool isEmpty = false;
+  late Timer _debounce;
 
   List<CountryData> _options = [];
 
@@ -69,6 +71,23 @@ class _SearchPageState extends State<SearchPage> {
       return 'Please enter a valid value.';
     }
     return null;
+  }
+
+  // Debounce onChange value
+  @override
+  void initState() {
+    super.initState();
+    _debounce = Timer(const Duration(milliseconds: 500), () {});
+  }
+
+  void _onSearchTextChanged(String value) {
+    // Cancel the previous timer to debounce the function
+    _debounce.cancel();
+
+    // Start a new timer
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      fetchCountryData(value);
+    });
   }
 
   @override
@@ -173,9 +192,7 @@ class _SearchPageState extends State<SearchPage> {
                       return TextFormField(
                         controller: textController,
                         focusNode: focusNode,
-                        onChanged: (String value) {
-                          fetchCountryData(value);
-                        },
+                        onChanged: _onSearchTextChanged,
                         validator: validateInput,
                         decoration: InputDecoration(
                           enabledBorder: OutlineInputBorder(
