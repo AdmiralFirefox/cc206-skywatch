@@ -22,6 +22,7 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+  TextEditingController textController = TextEditingController();
   String submittedText = "";
   bool isEmpty = false;
 
@@ -159,6 +160,7 @@ class _SearchPageState extends State<SearchPage> {
                     onSelected: (CountryData selection) {
                       setState(() {
                         submittedText = selection.name;
+                        textController.text = "";
                         FocusManager.instance.primaryFocus?.unfocus();
                       });
                     },
@@ -166,8 +168,10 @@ class _SearchPageState extends State<SearchPage> {
                         TextEditingController textEditingController,
                         FocusNode focusNode,
                         VoidCallback onFieldSubmitted) {
+                      textController = textEditingController;
+
                       return TextFormField(
-                        controller: textEditingController,
+                        controller: textController,
                         focusNode: focusNode,
                         onChanged: (String value) {
                           fetchCountryData(value);
@@ -198,11 +202,10 @@ class _SearchPageState extends State<SearchPage> {
                           fillColor: Colors.white,
                           suffixIcon: GestureDetector(
                             onTap: () {
-                              if (validateInput(textEditingController.text) ==
-                                  null) {
+                              if (validateInput(textController.text) == null) {
                                 setState(() {
-                                  submittedText = textEditingController.text;
-                                  textEditingController.text = "";
+                                  submittedText = textController.text;
+                                  textController.text = "";
                                 });
                                 isEmpty = false;
                               } else {
@@ -219,7 +222,7 @@ class _SearchPageState extends State<SearchPage> {
                           if (validateInput(value) == null) {
                             setState(() {
                               submittedText = value;
-                              textEditingController.text = "";
+                              textController.text = "";
                             });
                             isEmpty = false;
                           } else {
