@@ -1,23 +1,67 @@
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+class CountryData {
+  final String name;
+  final String region;
+  final String country;
+
+  CountryData({
+    required this.name,
+    required this.region,
+    required this.country,
+  });
+}
 
 class SearchPage extends StatefulWidget {
-  const SearchPage({super.key});
+  const SearchPage({Key? key}) : super(key: key);
 
   @override
   _SearchPageState createState() => _SearchPageState();
 }
 
 class _SearchPageState extends State<SearchPage> {
-  TextEditingController textController = TextEditingController();
   String submittedText = "";
   bool isEmpty = false;
 
-  final List<String> _options = const <String>[
-    'New York',
-    'Tokyo',
-    'Manila',
-    'Seoul'
-  ];
+  List<CountryData> _options = [];
+
+  void fetchCountryData(String place) async {
+    String url =
+        'https://wft-geo-db.p.rapidapi.com/v1/geo/cities?minPopulation=5000&namePrefix=$place';
+
+    try {
+      var response = await Dio().get(
+        url,
+        options: Options(
+          headers: {
+            'X-RapidAPI-Key': dotenv.env['RAPID_API_KEY'],
+            'X-RapidAPI-Host': 'wft-geo-db.p.rapidapi.com'
+          },
+        ),
+      );
+
+      List<Map<String, dynamic>> cities = List<Map<String, dynamic>>.from(
+          response.data['data'].map((dynamic city) => {
+                'name': city['city'],
+                'region': city['region'],
+                'country': city['country'],
+              }));
+
+      setState(() {
+        _options = cities
+            .map((city) => CountryData(
+                  name: city['name'],
+                  region: city['region'],
+                  country: city['country'],
+                ))
+            .toList();
+      });
+    } catch (e) {
+      print('Error fetching country data: $e');
+    }
+  }
 
   String? validateInput(String? value) {
     if (value!.trim().isEmpty) {
@@ -52,22 +96,22 @@ class _SearchPageState extends State<SearchPage> {
                 padding: const EdgeInsets.all(16.0),
                 child: LayoutBuilder(builder:
                     (BuildContext context, BoxConstraints constraints) {
-                  return Autocomplete<String>(
+                  return Autocomplete<CountryData>(
                     optionsBuilder: (TextEditingValue textEditingValue) {
                       if (textEditingValue.text == '') {
-                        return const Iterable<String>.empty();
+                        return const Iterable<CountryData>.empty();
                       }
-                      return _options.where((option) => option
+                      return _options.where((option) => option.name
                           .toLowerCase()
                           .contains(textEditingValue.text.toLowerCase()));
                     },
                     optionsViewBuilder: (BuildContext context,
-                        AutocompleteOnSelected<String> onSelected,
-                        Iterable<String> options) {
+                        AutocompleteOnSelected<CountryData> onSelected,
+                        Iterable<CountryData> options) {
                       return Align(
                         alignment: Alignment.topLeft,
                         child: Material(
-                          color: Colors.white, // Autocomplete Background color
+                          color: Colors.white,
                           elevation: 4.0,
                           child: SizedBox(
                             width: constraints.maxWidth,
@@ -76,19 +120,33 @@ class _SearchPageState extends State<SearchPage> {
                               itemCount: options.length,
                               shrinkWrap: true,
                               itemBuilder: (BuildContext context, int index) {
-                                final String option = options.elementAt(index);
+                                final CountryData option =
+                                    options.elementAt(index);
                                 return InkWell(
                                   onTap: () => onSelected(option),
                                   child: Padding(
                                     padding: const EdgeInsets.all(16.0),
-                                    child: Text(
-                                      option,
-                                      style: const TextStyle(
-                                        // Autocomplete Text Color
-                                        color: Colors.black,
-                                        fontFamily: "Poppins",
-                                        fontWeight: FontWeight.w400,
-                                      ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          option.name,
+                                          style: const TextStyle(
+                                            color: Colors.black,
+                                            fontFamily: "Poppins",
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                        Text(
+                                          "${option.region}, ${option.country}",
+                                          style: const TextStyle(
+                                            color: Colors.black54,
+                                            fontFamily: "Poppins",
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 );
@@ -98,9 +156,9 @@ class _SearchPageState extends State<SearchPage> {
                         ),
                       );
                     },
-                    onSelected: (String selection) {
+                    onSelected: (CountryData selection) {
                       setState(() {
-                        submittedText = selection;
+                        submittedText = selection.name;
                         FocusManager.instance.primaryFocus?.unfocus();
                       });
                     },
@@ -111,6 +169,9 @@ class _SearchPageState extends State<SearchPage> {
                       return TextFormField(
                         controller: textEditingController,
                         focusNode: focusNode,
+                        onChanged: (String value) {
+                          fetchCountryData(value);
+                        },
                         validator: validateInput,
                         decoration: InputDecoration(
                           enabledBorder: OutlineInputBorder(
