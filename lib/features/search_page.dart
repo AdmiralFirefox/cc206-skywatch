@@ -26,10 +26,11 @@ class _SearchPageState extends State<SearchPage> {
   TextEditingController textController = TextEditingController();
   String submittedText = "";
   bool isEmpty = false;
-  Timer? _debounceTimer;
+  Timer? _debounce;
 
   List<CountryData> _options = [];
 
+  // Fetch Autofill Country Data
   void fetchCountryData(String place) async {
     String url =
         'https://wft-geo-db.p.rapidapi.com/v1/geo/cities?minPopulation=5000&namePrefix=$place';
@@ -60,6 +61,11 @@ class _SearchPageState extends State<SearchPage> {
                   country: city['country'],
                 ))
             .toList();
+
+        // Trigger a text change to update the options list
+        final currentText = textController.text;
+        textController.text = '$currentText ';
+        textController.text = currentText;
       });
     } catch (e) {
       print('Error fetching country data: $e');
@@ -75,13 +81,16 @@ class _SearchPageState extends State<SearchPage> {
 
   // Debounce onChange value
   void _onSearchTextChanged(String value) {
-    if (_debounceTimer != null) {
-      _debounceTimer!.cancel();
-    }
-
-    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
       fetchCountryData(value);
     });
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
   }
 
   @override
