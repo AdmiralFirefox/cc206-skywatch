@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:cc206_skywatch/components/favorites_drawer.dart';
+import 'package:cc206_skywatch/components/search_history_drawer.dart';
 import 'package:cc206_skywatch/features/search_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -58,6 +60,36 @@ class MyApp extends StatelessWidget {
                 ),
               ),
             ),
+            leading: Builder(
+              builder: (BuildContext context) {
+                return IconButton(
+                  icon: const Icon(
+                    Icons.menu,
+                    color: Colors.white,
+                    size: 30.0,
+                  ),
+                  onPressed: () {
+                    Scaffold.of(context).openDrawer();
+                  },
+                );
+              },
+            ),
+            actions: <Widget>[
+              Builder(
+                builder: (context) {
+                  return IconButton(
+                    icon: const Icon(
+                      Icons.history,
+                      color: Colors.white,
+                      size: 30.0,
+                    ),
+                    onPressed: () {
+                      Scaffold.of(context).openEndDrawer();
+                    },
+                  );
+                },
+              )
+            ],
           ),
           body: const TabBarView(
             children: [
@@ -71,6 +103,8 @@ class MyApp extends StatelessWidget {
               SearchPage(),
             ],
           ),
+          drawer: const BookmarksDrawer(),
+          endDrawer: const SearchHistoryDrawer(),
         ),
       ),
     );
