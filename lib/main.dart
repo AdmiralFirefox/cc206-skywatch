@@ -8,7 +8,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +18,60 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.amberAccent),
         useMaterial3: true,
       ),
-      home: const Scaffold(
-        body: SearchPage(),
+      home: DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text(
+              "SkyWatch",
+              style: TextStyle(
+                color: Colors.white,
+                fontFamily: "Poppins",
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            backgroundColor: const Color.fromRGBO(24, 66, 90, 1),
+            bottom: const PreferredSize(
+              preferredSize: Size.fromHeight(50.0),
+              child: SizedBox(
+                height: 50.0,
+                child: TabBar(
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  indicatorWeight: 4.0,
+                  indicatorColor: Color.fromRGBO(252, 96, 66, 1),
+                  tabs: [
+                    Tab(
+                      icon: Icon(
+                        Icons.home_filled,
+                        color: Colors.white,
+                        size: 26.0,
+                      ),
+                    ),
+                    Tab(
+                      icon: Icon(
+                        Icons.search,
+                        color: Colors.white,
+                        size: 28.0,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          body: const TabBarView(
+            children: [
+              Tab(
+                icon: Icon(
+                  Icons.home_filled,
+                  color: Colors.black,
+                  size: 50.0,
+                ),
+              ),
+              SearchPage(),
+            ],
+          ),
+        ),
       ),
     );
   }

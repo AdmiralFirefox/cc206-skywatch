@@ -109,9 +109,9 @@ class _SearchPageState extends State<SearchPage> {
           ),
         ),
         padding: const EdgeInsets.only(
-          left: 15,
-          top: 50,
-          right: 15,
+          left: 10,
+          top: 15,
+          right: 10,
           bottom: 20,
         ),
         child: Column(
