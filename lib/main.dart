@@ -18,7 +18,9 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.amberAccent),
         useMaterial3: true,
       ),
-      home: const SearchPage(),
+      home: const Scaffold(
+        body: SearchPage(),
+      ),
     );
   }
 }
