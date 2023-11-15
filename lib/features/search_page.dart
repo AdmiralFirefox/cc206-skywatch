@@ -82,9 +82,11 @@ class _SearchPageState extends State<SearchPage> {
   // Debounce onChange value
   void _onSearchTextChanged(String value) {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () {
-      fetchCountryData(value);
-    });
+    if (value.isNotEmpty) {
+      _debounce = Timer(const Duration(milliseconds: 350), () {
+        fetchCountryData(value);
+      });
+    }
   }
 
   @override
