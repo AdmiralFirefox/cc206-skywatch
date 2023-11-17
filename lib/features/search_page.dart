@@ -1,3 +1,4 @@
+import 'package:cc206_skywatch/components/weather_main_info.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'dart:async';
@@ -23,6 +24,8 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+  Future<Map<String, dynamic>> weatherDataFuture =
+      Future.value({'empty': true});
   TextEditingController textController = TextEditingController();
   String submittedText = "";
   bool isEmpty = false;
@@ -70,6 +73,19 @@ class _SearchPageState extends State<SearchPage> {
     } catch (e) {
       print('Error fetching country data: $e');
     }
+  }
+
+// Fetch Weather Data
+  Future<Map<String, dynamic>> fetchWeatherData() async {
+    if (submittedText.isEmpty) {
+      return {'empty': true};
+    }
+
+    var dio = Dio();
+    var response = await dio.get(
+      'https://api.openweathermap.org/data/2.5/weather?q=$submittedText&units=metric&appid=${dotenv.env['WEATHER_API_KEY']}',
+    );
+    return response.data;
   }
 
   String? validateInput(String? value) {
@@ -184,6 +200,7 @@ class _SearchPageState extends State<SearchPage> {
                     setState(() {
                       submittedText = selection.name;
                       textController.text = "";
+                      weatherDataFuture = fetchWeatherData();
                       FocusManager.instance.primaryFocus?.unfocus();
                     });
                   },
@@ -227,6 +244,7 @@ class _SearchPageState extends State<SearchPage> {
                               setState(() {
                                 submittedText = textController.text;
                                 textController.text = "";
+                                weatherDataFuture = fetchWeatherData();
                               });
                               isEmpty = false;
                             } else {
@@ -244,6 +262,7 @@ class _SearchPageState extends State<SearchPage> {
                           setState(() {
                             submittedText = value;
                             textController.text = "";
+                            weatherDataFuture = fetchWeatherData();
                           });
                           isEmpty = false;
                         } else {
@@ -256,9 +275,22 @@ class _SearchPageState extends State<SearchPage> {
                 );
               }),
             ),
-            Text(
-              submittedText,
-              style: const TextStyle(fontSize: 24),
+            FutureBuilder<Map<String, dynamic>>(
+              future: weatherDataFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else {
+                  var data = snapshot.data;
+                  if (data != null && data['empty'] == true) {
+                    return const Text('Welcome to weather app');
+                  } else {
+                    return WeatherMainInfo(data: data!);
+                  }
+                }
+              },
             ),
           ],
         ),
