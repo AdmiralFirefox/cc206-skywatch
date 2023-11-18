@@ -63,12 +63,11 @@ class SearchHistoryDrawer extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(right: 10.0),
-                        child: Text(
+                  Expanded(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
                           "${searchCountry.temp.toString()}°",
                           style: const TextStyle(
                             color: Colors.black,
@@ -77,24 +76,25 @@ class SearchHistoryDrawer extends StatelessWidget {
                             fontSize: 20.0,
                           ),
                         ),
-                      ),
-                      ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 170),
-                        child: Text(
-                          searchCountry.name,
-                          softWrap: true,
-                          overflow: TextOverflow.visible,
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontFamily: "Poppins",
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16.5,
-                            height: 1.3,
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            searchCountry.name,
+                            softWrap: true,
+                            overflow: TextOverflow.visible,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontFamily: "Poppins",
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16.5,
+                              height: 1.3,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
+                  const SizedBox(width: 10),
                   GestureDetector(
                     child: const Icon(
                       Icons.delete,

@@ -62,8 +62,7 @@ class BookmarksDrawer extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 170),
+                  Expanded(
                     child: Text(
                       searchCountry.name,
                       softWrap: true,
@@ -77,6 +76,7 @@ class BookmarksDrawer extends StatelessWidget {
                       ),
                     ),
                   ),
+                  const SizedBox(width: 10),
                   GestureDetector(
                     child: const Icon(
                       Icons.favorite,
