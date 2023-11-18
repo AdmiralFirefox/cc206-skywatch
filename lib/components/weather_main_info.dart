@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class WeatherMainInfo extends StatelessWidget {
   final Map<String, dynamic> data;
@@ -7,17 +8,143 @@ class WeatherMainInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Text('Temperature: ${data['main']['temp']}'),
-        Text('Min Temperature: ${data['main']['temp_min']}'),
-        Text('Max Temperature: ${data['main']['temp_max']}'),
-        Text('Name: ${data['name']}'),
-        Text('Country: ${data['sys']['country']}'),
-        Text('Timezone: ${data['timezone']}'),
-        Image.network(
-            'http://openweathermap.org/img/w/${data['weather'][0]['icon']}.png'),
-        Text('Description: ${data['weather'][0]['description']}'),
+    String formatDate(int timezoneOffSet) {
+      DateTime utcTime = DateTime.now().toUtc();
+      Duration offset = Duration(seconds: timezoneOffSet);
+      DateTime localTime = utcTime.add(offset);
+      DateFormat dateFormat = DateFormat('h:mm a, MMM d, yyyy');
+      String formattedDate = dateFormat.format(localTime);
+
+      return formattedDate;
+    }
+
+    return Stack(
+      children: [
+        Container(
+          margin: const EdgeInsets.only(top: 20),
+          padding: const EdgeInsets.only(
+            top: 35.0,
+            right: 16.0,
+            bottom: 25.0,
+            left: 16.0,
+          ),
+          decoration: BoxDecoration(
+            color: const Color.fromRGBO(24, 66, 90, 75),
+            borderRadius: BorderRadius.circular(5.0),
+          ),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Text(
+                      "${data['name']}, ${data['sys']['country']}",
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontFamily: "Poppins",
+                        fontWeight: FontWeight.w700,
+                        fontSize: 27.0,
+                      ),
+                      softWrap: true,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Text(
+                formatDate(data['timezone']),
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontFamily: "Poppins",
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15.0,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        "${data['main']['temp'].ceil()}°",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontFamily: "Poppins",
+                          fontWeight: FontWeight.w600,
+                          fontSize: 38.0,
+                        ),
+                      ),
+                      const SizedBox(height: 1),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "${data['main']['temp_min'].ceil()}°",
+                            style: const TextStyle(
+                              color: Color.fromRGBO(129, 183, 228, 1),
+                              fontFamily: "Poppins",
+                              fontWeight: FontWeight.w500,
+                              fontSize: 25.0,
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                          Text(
+                            "${data['main']['temp_max'].ceil()}°",
+                            style: const TextStyle(
+                              color: Color.fromRGBO(253, 128, 104, 1),
+                              fontFamily: "Poppins",
+                              fontWeight: FontWeight.w500,
+                              fontSize: 25.0,
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                  const SizedBox(width: 30),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Image.network(
+                        'http://openweathermap.org/img/w/${data['weather'][0]['icon']}.png',
+                        width: 50.0,
+                      ),
+                      const SizedBox(height: 1),
+                      Text(
+                        '${data['weather'][0]['description']}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontFamily: "Poppins",
+                          fontWeight: FontWeight.w500,
+                          fontSize: 15.0,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+        Positioned(
+          right: 5,
+          top: 23,
+          child: IconButton(
+            onPressed: () {
+              print("Add to favorites");
+            },
+            icon: const Icon(
+              Icons.favorite,
+              size: 32.0,
+              color: Color.fromRGBO(231, 84, 128, 1),
+            ),
+          ),
+        ),
       ],
     );
   }

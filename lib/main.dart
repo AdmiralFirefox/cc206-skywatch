@@ -14,6 +14,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const AssetImage backgroundImage =
+        AssetImage('assets/images/main-background.jpg');
+
     return MaterialApp(
       title: "SkyWatch",
       theme: ThemeData(
@@ -91,16 +94,24 @@ class MyApp extends StatelessWidget {
               )
             ],
           ),
-          body: const TabBarView(
+          body: TabBarView(
             children: [
-              Tab(
-                icon: Icon(
-                  Icons.home_filled,
-                  color: Colors.black,
-                  size: 50.0,
+              const Icon(
+                Icons.home,
+                color: Colors.black,
+                size: 50.0,
+              ),
+              Container(
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: backgroundImage,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: const SingleChildScrollView(
+                  child: SearchPage(),
                 ),
               ),
-              SearchPage(),
             ],
           ),
           drawer: const BookmarksDrawer(),
