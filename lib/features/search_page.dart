@@ -264,13 +264,141 @@ class _SearchPageState extends State<SearchPage> {
             future: weatherDataFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
+                return Container(
+                  margin: const EdgeInsets.only(top: 20.0),
+                  padding: const EdgeInsets.only(top: 40.0, bottom: 35.0),
+                  decoration: BoxDecoration(
+                    color: const Color.fromRGBO(24, 66, 90, 75),
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            height: 50.0,
+                            width: 50.0,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                          ),
+                          SizedBox(height: 35.0),
+                          Text(
+                            "Loading...",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: "Poppins",
+                              fontWeight: FontWeight.w700,
+                              fontSize: 25.0,
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                );
               } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
+                return Container(
+                  margin: const EdgeInsets.only(top: 20.0),
+                  decoration: BoxDecoration(
+                    color: const Color.fromRGBO(24, 66, 90, 75),
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                  padding: const EdgeInsets.only(
+                    top: 25.0,
+                    right: 16.0,
+                    bottom: 25.0,
+                    left: 16.0,
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              "We couldn't find what you're looking for",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: "Poppins",
+                                fontWeight: FontWeight.w700,
+                                fontSize: 20.0,
+                                height: 1.25,
+                              ),
+                            ),
+                            SizedBox(height: 20.0),
+                            Text(
+                              "Double check your spelling and make sure that place exist.",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: "Poppins",
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14.0,
+                                height: 1.40,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
               } else {
                 var data = snapshot.data;
                 if (data != null && data['empty'] == true) {
-                  return const Text('Welcome to weather app');
+                  return Container(
+                    margin: const EdgeInsets.only(top: 20),
+                    padding: const EdgeInsets.only(
+                      top: 25.0,
+                      right: 17.0,
+                      bottom: 25.0,
+                      left: 17.0,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color.fromRGBO(24, 66, 90, 75),
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Search for a City or Country",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: "Poppins",
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 23.0,
+                                  height: 1.25,
+                                ),
+                              ),
+                              SizedBox(height: 20.0),
+                              Text(
+                                "Suggestion: Try searching your place to get started.",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: "Poppins",
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14.0,
+                                  height: 1.40,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  );
                 } else {
                   return Column(
                     children: [
