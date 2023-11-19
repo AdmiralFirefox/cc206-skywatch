@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:cc206_skywatch/utils/favorite_place.dart';
 
-class BookmarkedCountry {
-  String name;
+class BookmarksDrawer extends StatefulWidget {
+  final List<FavoritePlace> favoritePlaces;
+  final Function(FavoritePlace) onFavoritePlaceRemoved;
 
-  BookmarkedCountry({required this.name});
-}
-
-class BookmarksDrawer extends StatelessWidget {
-  const BookmarksDrawer({super.key});
+  const BookmarksDrawer({
+    super.key,
+    required this.favoritePlaces,
+    required this.onFavoritePlaceRemoved,
+  });
 
   @override
-  Widget build(BuildContext context) {
-    List<BookmarkedCountry> dummySearchData = [
-      BookmarkedCountry(name: "Iloilo City"),
-      BookmarkedCountry(name: "Bacolod City"),
-      BookmarkedCountry(name: "Manila"),
-    ];
+  State<BookmarksDrawer> createState() => _BookmarksDrawerState();
+}
 
+class _BookmarksDrawerState extends State<BookmarksDrawer> {
+  @override
+  Widget build(BuildContext context) {
     return Drawer(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -27,36 +28,35 @@ class BookmarksDrawer extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          SizedBox(
+          const SizedBox(
             height: 120.0,
             child: DrawerHeader(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: Color.fromRGBO(24, 66, 90, 1),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.favorite,
                     color: Colors.white,
-                    size: 30.0,
+                    size: 25.0,
                   ),
-                  Container(
-                    margin: const EdgeInsets.only(left: 10.0),
-                    child: const Text(
-                      "Bookmarks",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: "Poppins",
-                        fontWeight: FontWeight.w600,
-                      ),
+                  SizedBox(width: 10.0),
+                  Text(
+                    "Bookmarks",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontFamily: "Poppins",
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15.0,
                     ),
                   ),
                 ],
               ),
             ),
           ),
-          ...dummySearchData.map((searchCountry) {
+          ...widget.favoritePlaces.reversed.map((favoritePlace) {
             return ListTile(
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -64,7 +64,7 @@ class BookmarksDrawer extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      searchCountry.name,
+                      favoritePlace.placeName,
                       softWrap: true,
                       overflow: TextOverflow.visible,
                       style: const TextStyle(
@@ -84,7 +84,7 @@ class BookmarksDrawer extends StatelessWidget {
                       size: 28.0,
                     ),
                     onTap: () {
-                      print("Added to Favorites");
+                      widget.onFavoritePlaceRemoved(favoritePlace);
                     },
                   ),
                 ],
