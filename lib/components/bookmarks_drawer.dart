@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:cc206_skywatch/utils/favorite_place.dart';
+import 'package:cc206_skywatch/utils/bookmarked_place.dart';
 
 class BookmarksDrawer extends StatefulWidget {
-  final List<FavoritePlace> favoritePlaces;
-  final Function(FavoritePlace) onFavoritePlaceRemoved;
+  final List<BookmarkedPlace> favoritePlaces;
+  final Function(BookmarkedPlace) onFavoritePlaceRemoved;
 
   const BookmarksDrawer({
     super.key,

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:cc206_skywatch/utils/favorite_place.dart';
+import 'package:cc206_skywatch/utils/bookmarked_place.dart';
 import 'package:uuid/uuid.dart';
 
 //ignore: must_be_immutable
 class WeatherMainInfo extends StatefulWidget {
   final Map<String, dynamic> data;
-  final List<FavoritePlace> favoritePlaces;
+  final List<BookmarkedPlace> favoritePlaces;
   bool isFavoritePlaceExist;
   final Function(bool) onFavoriteToggle;
 
@@ -165,7 +165,7 @@ class _WeatherMainInfoState extends State<WeatherMainInfo> {
                   widget.favoritePlaces.removeAt(existingPlaceIndex);
                   widget.onFavoriteToggle(false);
                 } else {
-                  widget.favoritePlaces.add(FavoritePlace(
+                  widget.favoritePlaces.add(BookmarkedPlace(
                     id: uuid.v4(),
                     placeName: placeName,
                   ));

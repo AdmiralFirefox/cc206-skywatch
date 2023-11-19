@@ -4,7 +4,7 @@ import 'package:cc206_skywatch/components/bookmarks_drawer.dart';
 import 'package:cc206_skywatch/components/search_history_drawer.dart';
 import 'package:cc206_skywatch/features/search_page.dart';
 import 'package:cc206_skywatch/utils/searched_place.dart';
-import 'package:cc206_skywatch/utils/favorite_place.dart';
+import 'package:cc206_skywatch/utils/bookmarked_place.dart';
 
 void main() async {
   runApp(const MyApp());
@@ -20,7 +20,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   List<SearchedPlace> searchedPlaces = [];
-  List<FavoritePlace> favoritePlaces = [];
+  List<BookmarkedPlace> favoritePlaces = [];
   bool isFavoritePlaceExist = false;
 
   @override

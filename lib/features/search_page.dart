@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'dart:async';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:cc206_skywatch/utils/searched_place.dart';
-import 'package:cc206_skywatch/utils/favorite_place.dart';
+import 'package:cc206_skywatch/utils/bookmarked_place.dart';
 
 class CountryData {
   final String name;
@@ -21,7 +21,7 @@ class CountryData {
 //ignore: must_be_immutable
 class SearchPage extends StatefulWidget {
   final List<SearchedPlace> searchedPlaces;
-  final List<FavoritePlace> favoritePlaces;
+  final List<BookmarkedPlace> favoritePlaces;
   bool isFavoritePlaceExist;
 
   SearchPage(
