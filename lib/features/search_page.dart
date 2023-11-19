@@ -5,18 +5,7 @@ import 'dart:async';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:cc206_skywatch/utils/searched_place.dart';
 import 'package:cc206_skywatch/utils/bookmarked_place.dart';
-
-class CountryData {
-  final String name;
-  final String region;
-  final String country;
-
-  CountryData({
-    required this.name,
-    required this.region,
-    required this.country,
-  });
-}
+import 'package:cc206_skywatch/utils/autofill_place.dart';
 
 //ignore: must_be_immutable
 class SearchPage extends StatefulWidget {
@@ -43,7 +32,7 @@ class _SearchPageState extends State<SearchPage> {
   bool isEmpty = false;
   Timer? _debounce;
 
-  List<CountryData> _options = [];
+  List<AutoFillPlace> _options = [];
 
   // Fetch Autofill Country Data
   void fetchCountryData(String place) async {
@@ -70,7 +59,7 @@ class _SearchPageState extends State<SearchPage> {
 
       setState(() {
         _options = cities
-            .map((city) => CountryData(
+            .map((city) => AutoFillPlace(
                   name: city['name'],
                   region: city['region'],
                   country: city['country'],
@@ -169,18 +158,18 @@ class _SearchPageState extends State<SearchPage> {
         children: [
           LayoutBuilder(
               builder: (BuildContext context, BoxConstraints constraints) {
-            return Autocomplete<CountryData>(
+            return Autocomplete<AutoFillPlace>(
               optionsBuilder: (TextEditingValue textEditingValue) {
                 if (textEditingValue.text == '') {
-                  return const Iterable<CountryData>.empty();
+                  return const Iterable<AutoFillPlace>.empty();
                 }
                 return _options.where((option) => option.name
                     .toLowerCase()
                     .contains(textEditingValue.text.toLowerCase()));
               },
               optionsViewBuilder: (BuildContext context,
-                  AutocompleteOnSelected<CountryData> onSelected,
-                  Iterable<CountryData> options) {
+                  AutocompleteOnSelected<AutoFillPlace> onSelected,
+                  Iterable<AutoFillPlace> options) {
                 return Align(
                   alignment: Alignment.topLeft,
                   child: Material(
@@ -193,7 +182,7 @@ class _SearchPageState extends State<SearchPage> {
                         itemCount: options.length,
                         shrinkWrap: true,
                         itemBuilder: (BuildContext context, int index) {
-                          final CountryData option = options.elementAt(index);
+                          final AutoFillPlace option = options.elementAt(index);
                           return InkWell(
                             onTap: () => onSelected(option),
                             child: Padding(
@@ -227,9 +216,9 @@ class _SearchPageState extends State<SearchPage> {
                   ),
                 );
               },
-              onSelected: (CountryData selection) {
+              onSelected: (AutoFillPlace selection) {
                 setState(() {
-                  submittedText = selection.name;
+                  submittedText = "${selection.name}, ${selection.country}";
                   textController.text = "";
                   weatherDataFuture = fetchWeatherData();
                   FocusManager.instance.primaryFocus?.unfocus();
