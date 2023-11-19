@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'dart:async';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:cc206_skywatch/utils/searched_place.dart';
+import 'package:cc206_skywatch/utils/favorite_place.dart';
 
 class CountryData {
   final String name;
@@ -17,13 +18,21 @@ class CountryData {
   });
 }
 
+//ignore: must_be_immutable
 class SearchPage extends StatefulWidget {
   final List<SearchedPlace> searchedPlaces;
+  final List<FavoritePlace> favoritePlaces;
+  bool isFavoritePlaceExist;
 
-  const SearchPage({Key? key, required this.searchedPlaces}) : super(key: key);
+  SearchPage(
+      {Key? key,
+      required this.searchedPlaces,
+      required this.favoritePlaces,
+      required this.isFavoritePlaceExist})
+      : super(key: key);
 
   @override
-  _SearchPageState createState() => _SearchPageState();
+  State<SearchPage> createState() => _SearchPageState();
 }
 
 class _SearchPageState extends State<SearchPage> {
@@ -96,7 +105,7 @@ class _SearchPageState extends State<SearchPage> {
         placeTemp: response.data['main']['temp'],
       );
 
-      // Check if a place with the same name already exists in the array
+      // Check if a place with the same name already exists in the searchedPlaces
       int index = widget.searchedPlaces
           .indexWhere((place) => place.placeName == newPlace.placeName);
 
@@ -105,8 +114,20 @@ class _SearchPageState extends State<SearchPage> {
         widget.searchedPlaces.removeAt(index);
       }
 
-      // Add the new place
+      // Add the new place to the searchedPlaces
       widget.searchedPlaces.add(newPlace);
+
+      // Check if place exist in favoritePlaces
+      String placeName =
+          "${response.data['name']}, ${response.data['sys']['country']}";
+      int existingPlaceIndex = widget.favoritePlaces
+          .indexWhere((place) => place.placeName == placeName);
+
+      if (existingPlaceIndex != -1) {
+        widget.isFavoritePlaceExist = true;
+      } else {
+        widget.isFavoritePlaceExist = false;
+      }
     }
 
     return response.data;
@@ -426,7 +447,16 @@ class _SearchPageState extends State<SearchPage> {
                 } else {
                   return Column(
                     children: [
-                      WeatherMainInfo(data: data!),
+                      WeatherMainInfo(
+                        data: data!,
+                        favoritePlaces: widget.favoritePlaces,
+                        isFavoritePlaceExist: widget.isFavoritePlaceExist,
+                        onFavoriteToggle: (bool isFavorite) {
+                          setState(() {
+                            widget.isFavoritePlaceExist = isFavorite;
+                          });
+                        },
+                      ),
                     ],
                   );
                 }

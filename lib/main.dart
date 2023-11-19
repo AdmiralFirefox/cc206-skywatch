@@ -1,21 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:cc206_skywatch/components/favorites_drawer.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:cc206_skywatch/components/bookmarks_drawer.dart';
 import 'package:cc206_skywatch/components/search_history_drawer.dart';
 import 'package:cc206_skywatch/features/search_page.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:cc206_skywatch/utils/searched_place.dart';
+import 'package:cc206_skywatch/utils/favorite_place.dart';
 
 void main() async {
   runApp(const MyApp());
   await dotenv.load();
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key});
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  List<SearchedPlace> searchedPlaces = [];
+  List<FavoritePlace> favoritePlaces = [];
+  bool isFavoritePlaceExist = false;
 
   @override
   Widget build(BuildContext context) {
-    List<SearchedPlace> searchedPlaces = [];
     const AssetImage backgroundImage =
         AssetImage('assets/images/main-background.jpg');
 
@@ -111,12 +120,24 @@ class MyApp extends StatelessWidget {
                   ),
                 ),
                 child: SingleChildScrollView(
-                  child: SearchPage(searchedPlaces: searchedPlaces),
+                  child: SearchPage(
+                    searchedPlaces: searchedPlaces,
+                    favoritePlaces: favoritePlaces,
+                    isFavoritePlaceExist: isFavoritePlaceExist,
+                  ),
                 ),
               ),
             ],
           ),
-          drawer: const BookmarksDrawer(),
+          drawer: BookmarksDrawer(
+            favoritePlaces: favoritePlaces,
+            onFavoritePlaceRemoved: (favoritePlace) {
+              setState(() {
+                favoritePlaces.remove(favoritePlace);
+                isFavoritePlaceExist = false;
+              });
+            },
+          ),
           endDrawer: SearchHistoryDrawer(searchedPlaces: searchedPlaces),
         ),
       ),

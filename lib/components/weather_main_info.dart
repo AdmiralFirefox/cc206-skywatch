@@ -1,13 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:cc206_skywatch/utils/favorite_place.dart';
+import 'package:uuid/uuid.dart';
 
-class WeatherMainInfo extends StatelessWidget {
+//ignore: must_be_immutable
+class WeatherMainInfo extends StatefulWidget {
   final Map<String, dynamic> data;
+  final List<FavoritePlace> favoritePlaces;
+  bool isFavoritePlaceExist;
+  final Function(bool) onFavoriteToggle;
 
-  const WeatherMainInfo({super.key, required this.data});
+  WeatherMainInfo({
+    super.key,
+    required this.data,
+    required this.favoritePlaces,
+    required this.isFavoritePlaceExist,
+    required this.onFavoriteToggle,
+  });
 
   @override
+  State<WeatherMainInfo> createState() => _WeatherMainInfoState();
+}
+
+class _WeatherMainInfoState extends State<WeatherMainInfo> {
+  @override
   Widget build(BuildContext context) {
+    var uuid = const Uuid();
+
     String formatDate(int timezoneOffSet) {
       DateTime utcTime = DateTime.now().toUtc();
       Duration offset = Duration(seconds: timezoneOffSet);
@@ -39,7 +58,7 @@ class WeatherMainInfo extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      "${data['name']}, ${data['sys']['country']}",
+                      "${widget.data['name']}, ${widget.data['sys']['country']}",
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         color: Colors.white,
@@ -54,7 +73,7 @@ class WeatherMainInfo extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                formatDate(data['timezone']),
+                formatDate(widget.data['timezone']),
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   color: Colors.white,
@@ -71,7 +90,7 @@ class WeatherMainInfo extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        "${data['main']['temp'].ceil()}°",
+                        "${widget.data['main']['temp'].ceil()}°",
                         style: const TextStyle(
                           color: Colors.white,
                           fontFamily: "Poppins",
@@ -84,7 +103,7 @@ class WeatherMainInfo extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "${data['main']['temp_min'].ceil()}°",
+                            "${widget.data['main']['temp_min'].ceil()}°",
                             style: const TextStyle(
                               color: Color.fromRGBO(129, 183, 228, 1),
                               fontFamily: "Poppins",
@@ -94,7 +113,7 @@ class WeatherMainInfo extends StatelessWidget {
                           ),
                           const SizedBox(width: 14),
                           Text(
-                            "${data['main']['temp_max'].ceil()}°",
+                            "${widget.data['main']['temp_max'].ceil()}°",
                             style: const TextStyle(
                               color: Color.fromRGBO(253, 128, 104, 1),
                               fontFamily: "Poppins",
@@ -111,12 +130,12 @@ class WeatherMainInfo extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Image.network(
-                        'http://openweathermap.org/img/w/${data['weather'][0]['icon']}.png',
+                        'http://openweathermap.org/img/w/${widget.data['weather'][0]['icon']}.png',
                         width: 50.0,
                       ),
                       const SizedBox(height: 1),
                       Text(
-                        '${data['weather'][0]['description']}',
+                        '${widget.data['weather'][0]['description']}',
                         style: const TextStyle(
                           color: Colors.white,
                           fontFamily: "Poppins",
@@ -136,13 +155,35 @@ class WeatherMainInfo extends StatelessWidget {
           top: 23,
           child: IconButton(
             onPressed: () {
-              print("Add to favorites");
+              setState(() {
+                String placeName =
+                    "${widget.data['name']}, ${widget.data['sys']['country']}";
+                int existingPlaceIndex = widget.favoritePlaces
+                    .indexWhere((place) => place.placeName == placeName);
+
+                if (existingPlaceIndex != -1) {
+                  widget.favoritePlaces.removeAt(existingPlaceIndex);
+                  widget.onFavoriteToggle(false);
+                } else {
+                  widget.favoritePlaces.add(FavoritePlace(
+                    id: uuid.v4(),
+                    placeName: placeName,
+                  ));
+                  widget.onFavoriteToggle(true);
+                }
+              });
             },
-            icon: const Icon(
-              Icons.favorite,
-              size: 32.0,
-              color: Color.fromRGBO(231, 84, 128, 1),
-            ),
+            icon: widget.isFavoritePlaceExist
+                ? const Icon(
+                    Icons.favorite,
+                    size: 32.0,
+                    color: Color.fromRGBO(231, 84, 128, 1),
+                  )
+                : const Icon(
+                    Icons.favorite_outline,
+                    size: 32.0,
+                    color: Color.fromRGBO(231, 84, 128, 1),
+                  ),
           ),
         ),
       ],
