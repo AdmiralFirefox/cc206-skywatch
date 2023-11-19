@@ -29,7 +29,6 @@ class _SearchPageState extends State<SearchPage> {
       Future.value({'empty': true});
   TextEditingController textController = TextEditingController();
   String submittedText = "";
-  bool isEmpty = false;
   Timer? _debounce;
 
   List<AutoFillPlace> _options = [];
@@ -277,9 +276,6 @@ class _SearchPageState extends State<SearchPage> {
                             textController.text = "";
                             weatherDataFuture = fetchWeatherData();
                           });
-                          isEmpty = false;
-                        } else {
-                          isEmpty = true;
                         }
                         focusNode.unfocus();
                       },
@@ -295,9 +291,6 @@ class _SearchPageState extends State<SearchPage> {
                         textController.text = "";
                         weatherDataFuture = fetchWeatherData();
                       });
-                      isEmpty = false;
-                    } else {
-                      isEmpty = true;
                     }
                     focusNode.unfocus();
                   },
