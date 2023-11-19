@@ -187,26 +187,30 @@ class _SearchPageState extends State<SearchPage> {
                             onTap: () => onSelected(option),
                             child: Padding(
                               padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    option.name,
-                                    style: const TextStyle(
-                                      color: Colors.black,
-                                      fontFamily: "Poppins",
-                                      fontWeight: FontWeight.w400,
+                              child: Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      option.name,
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                        fontFamily: "Poppins",
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 15.0,
+                                      ),
                                     ),
-                                  ),
-                                  Text(
-                                    "${option.region}, ${option.country}",
-                                    style: const TextStyle(
-                                      color: Colors.black54,
-                                      fontFamily: "Poppins",
-                                      fontWeight: FontWeight.w400,
+                                    Text(
+                                      "${option.region}, ${option.country}",
+                                      style: const TextStyle(
+                                        color: Colors.black54,
+                                        fontFamily: "Poppins",
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 13.0,
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           );
@@ -235,6 +239,12 @@ class _SearchPageState extends State<SearchPage> {
                   focusNode: focusNode,
                   onChanged: _onSearchTextChanged,
                   validator: validateInput,
+                  style: const TextStyle(
+                    color: Colors.black, // Text color
+                    fontSize: 15.5,
+                    fontFamily: "Poppins", // Text size
+                    fontWeight: FontWeight.w500, // Text weight
+                  ),
                   decoration: InputDecoration(
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(5.0),
@@ -252,9 +262,10 @@ class _SearchPageState extends State<SearchPage> {
                     ),
                     hintText: "Search for a City/Country",
                     hintStyle: const TextStyle(
-                      color: Colors.black,
+                      color: Colors.black54,
                       fontFamily: "Poppins",
-                      fontWeight: FontWeight.w400,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 15.5,
                     ),
                     filled: true,
                     fillColor: Colors.white,
