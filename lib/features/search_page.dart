@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'dart:async';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:cc206_skywatch/utils/searched_place.dart';
 
 class CountryData {
   final String name;
@@ -17,7 +18,9 @@ class CountryData {
 }
 
 class SearchPage extends StatefulWidget {
-  const SearchPage({Key? key}) : super(key: key);
+  final List<SearchedPlace> searchedPlaces;
+
+  const SearchPage({Key? key, required this.searchedPlaces}) : super(key: key);
 
   @override
   _SearchPageState createState() => _SearchPageState();
@@ -85,6 +88,27 @@ class _SearchPageState extends State<SearchPage> {
     var response = await dio.get(
       'https://api.openweathermap.org/data/2.5/weather?q=$submittedText&units=metric&appid=${dotenv.env['WEATHER_API_KEY']}',
     );
+
+    if (response.data != null) {
+      SearchedPlace newPlace = SearchedPlace(
+        placeName:
+            "${response.data['name']}, ${response.data['sys']['country']}",
+        placeTemp: response.data['main']['temp'],
+      );
+
+      // Check if a place with the same name already exists in the array
+      int index = widget.searchedPlaces
+          .indexWhere((place) => place.placeName == newPlace.placeName);
+
+      // If it does, remove it
+      if (index != -1) {
+        widget.searchedPlaces.removeAt(index);
+      }
+
+      // Add the new place
+      widget.searchedPlaces.add(newPlace);
+    }
+
     return response.data;
   }
 

@@ -3,6 +3,7 @@ import 'package:cc206_skywatch/components/favorites_drawer.dart';
 import 'package:cc206_skywatch/components/search_history_drawer.dart';
 import 'package:cc206_skywatch/features/search_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:cc206_skywatch/utils/searched_place.dart';
 
 void main() async {
   runApp(const MyApp());
@@ -14,6 +15,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<SearchedPlace> searchedPlaces = [];
     const AssetImage backgroundImage =
         AssetImage('assets/images/main-background.jpg');
 
@@ -108,14 +110,14 @@ class MyApp extends StatelessWidget {
                     fit: BoxFit.cover,
                   ),
                 ),
-                child: const SingleChildScrollView(
-                  child: SearchPage(),
+                child: SingleChildScrollView(
+                  child: SearchPage(searchedPlaces: searchedPlaces),
                 ),
               ),
             ],
           ),
           drawer: const BookmarksDrawer(),
-          endDrawer: const SearchHistoryDrawer(),
+          endDrawer: SearchHistoryDrawer(searchedPlaces: searchedPlaces),
         ),
       ),
     );
