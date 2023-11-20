@@ -5,7 +5,7 @@ import 'package:uuid/uuid.dart';
 class SearchedPlaceProvider extends ChangeNotifier {
   var uuid = const Uuid();
   List<SearchedPlace> _searchedPlaces = [];
-  List<SearchedPlace> get bookmarkedPlaces => _searchedPlaces;
+  List<SearchedPlace> get searchedPlaces => _searchedPlaces;
 
   void addToSearchHistory(String placeName, double placeTemp) {
     int existingIndex = _searchedPlaces
@@ -22,6 +22,10 @@ class SearchedPlaceProvider extends ChangeNotifier {
     );
 
     notifyListeners();
+  }
+
+  void removeFromSearchHistory(String placeName) {
+    _searchedPlaces.removeWhere((place) => place.placeName == placeName);
   }
 
   void clearSearches() {

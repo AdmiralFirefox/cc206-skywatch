@@ -1,15 +1,35 @@
+import 'package:cc206_skywatch/provider/searched_place.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
+import 'package:dio/dio.dart';
 import 'package:cc206_skywatch/components/bookmarks_drawer.dart';
 import 'package:cc206_skywatch/components/search_history_drawer.dart';
 import 'package:cc206_skywatch/features/search_page.dart';
-import 'package:cc206_skywatch/utils/searched_place.dart';
 import 'package:cc206_skywatch/provider/bookmark_provider.dart';
 
 void main() async {
-  runApp(const MyApp());
+  runApp(const MainApp());
   await dotenv.load();
+}
+
+class MainApp extends StatelessWidget {
+  const MainApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => BookmarkProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => SearchedPlaceProvider(),
+        ),
+      ],
+      child: const MyApp(),
+    );
+  }
 }
 
 class MyApp extends StatefulWidget {
@@ -20,117 +40,153 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  List<SearchedPlace> searchedPlaces = [];
+  Future<Map<String, dynamic>> weatherDataFuture =
+      Future.value({'empty': true});
+  String submittedText = "";
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<SearchedPlaceProvider>(context);
+
     const AssetImage backgroundImage =
         AssetImage('assets/images/main-background.jpg');
 
-    return ChangeNotifierProvider(
-      create: (context) => BookmarkProvider(),
-      child: MaterialApp(
-        title: "SkyWatch",
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.amberAccent),
-          useMaterial3: true,
-        ),
-        home: DefaultTabController(
-          length: 2,
-          child: Scaffold(
-            appBar: AppBar(
-              title: const Text(
-                "SkyWatch",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontFamily: "Poppins",
-                  fontWeight: FontWeight.w600,
+    // Fetch Weather Data
+    Future<Map<String, dynamic>> fetchWeatherData() async {
+      if (submittedText.isEmpty) {
+        return {'empty': true};
+      }
+
+      var dio = Dio();
+      var response = await dio.get(
+        'https://api.openweathermap.org/data/2.5/weather?q=$submittedText&units=metric&appid=${dotenv.env['WEATHER_API_KEY']}',
+      );
+
+      if (response.data != null) {
+        provider.addToSearchHistory(
+          "${response.data['name']}, ${response.data['sys']['country']}",
+          response.data['main']['temp'],
+        );
+      }
+
+      return response.data;
+    }
+
+    void setSubmittedText(String textValue) {
+      setState(() {
+        submittedText = textValue;
+      });
+    }
+
+    void setWeatherDataFuture() {
+      setState(() {
+        weatherDataFuture = fetchWeatherData();
+      });
+    }
+
+    return MaterialApp(
+      title: "SkyWatch",
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.amberAccent),
+        useMaterial3: true,
+      ),
+      home: DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text(
+              "SkyWatch",
+              style: TextStyle(
+                color: Colors.white,
+                fontFamily: "Poppins",
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            backgroundColor: const Color.fromRGBO(24, 66, 90, 1),
+            bottom: const PreferredSize(
+              preferredSize: Size.fromHeight(50.0),
+              child: SizedBox(
+                height: 50.0,
+                child: TabBar(
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  indicatorWeight: 4.0,
+                  indicatorColor: Color.fromRGBO(252, 96, 66, 1),
+                  tabs: [
+                    Tab(
+                      icon: Icon(
+                        Icons.home_filled,
+                        color: Colors.white,
+                        size: 26.0,
+                      ),
+                    ),
+                    Tab(
+                      icon: Icon(
+                        Icons.search,
+                        color: Colors.white,
+                        size: 28.0,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              backgroundColor: const Color.fromRGBO(24, 66, 90, 1),
-              bottom: const PreferredSize(
-                preferredSize: Size.fromHeight(50.0),
-                child: SizedBox(
-                  height: 50.0,
-                  child: TabBar(
-                    indicatorSize: TabBarIndicatorSize.tab,
-                    indicatorWeight: 4.0,
-                    indicatorColor: Color.fromRGBO(252, 96, 66, 1),
-                    tabs: [
-                      Tab(
-                        icon: Icon(
-                          Icons.home_filled,
-                          color: Colors.white,
-                          size: 26.0,
-                        ),
-                      ),
-                      Tab(
-                        icon: Icon(
-                          Icons.search,
-                          color: Colors.white,
-                          size: 28.0,
-                        ),
-                      ),
-                    ],
+            ),
+            leading: Builder(
+              builder: (BuildContext context) {
+                return IconButton(
+                  icon: const Icon(
+                    Icons.menu,
+                    color: Colors.white,
+                    size: 30.0,
                   ),
-                ),
-              ),
-              leading: Builder(
-                builder: (BuildContext context) {
+                  onPressed: () {
+                    Scaffold.of(context).openDrawer();
+                  },
+                );
+              },
+            ),
+            actions: <Widget>[
+              Builder(
+                builder: (context) {
                   return IconButton(
                     icon: const Icon(
-                      Icons.menu,
+                      Icons.history,
                       color: Colors.white,
                       size: 30.0,
                     ),
                     onPressed: () {
-                      Scaffold.of(context).openDrawer();
+                      Scaffold.of(context).openEndDrawer();
                     },
                   );
                 },
-              ),
-              actions: <Widget>[
-                Builder(
-                  builder: (context) {
-                    return IconButton(
-                      icon: const Icon(
-                        Icons.history,
-                        color: Colors.white,
-                        size: 30.0,
-                      ),
-                      onPressed: () {
-                        Scaffold.of(context).openEndDrawer();
-                      },
-                    );
-                  },
-                )
-              ],
-            ),
-            body: TabBarView(
-              children: [
-                const Icon(
-                  Icons.home,
-                  color: Colors.black,
-                  size: 50.0,
-                ),
-                Container(
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                      image: backgroundImage,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  child: SingleChildScrollView(
-                    child: SearchPage(
-                      searchedPlaces: searchedPlaces,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            drawer: const BookmarksDrawer(),
-            endDrawer: SearchHistoryDrawer(searchedPlaces: searchedPlaces),
+              )
+            ],
           ),
+          body: TabBarView(
+            children: [
+              const Icon(
+                Icons.home,
+                color: Colors.black,
+                size: 50.0,
+              ),
+              Container(
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: backgroundImage,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: SingleChildScrollView(
+                  child: SearchPage(
+                    weatherDataFuture: weatherDataFuture,
+                    setWeatherDataFuture: setWeatherDataFuture,
+                    setSubmittedText: setSubmittedText,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          drawer: const BookmarksDrawer(),
+          endDrawer: const SearchHistoryDrawer(),
         ),
       ),
     );

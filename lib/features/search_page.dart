@@ -3,15 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'dart:async';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:cc206_skywatch/utils/searched_place.dart';
 import 'package:cc206_skywatch/utils/autofill_place.dart';
 
 class SearchPage extends StatefulWidget {
-  final List<SearchedPlace> searchedPlaces;
+  final Future<Map<String, dynamic>> weatherDataFuture;
+  final Function() setWeatherDataFuture;
+  final Function(String) setSubmittedText;
 
   const SearchPage({
     Key? key,
-    required this.searchedPlaces,
+    required this.weatherDataFuture,
+    required this.setWeatherDataFuture,
+    required this.setSubmittedText,
   }) : super(key: key);
 
   @override
@@ -19,10 +22,7 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  Future<Map<String, dynamic>> weatherDataFuture =
-      Future.value({'empty': true});
   TextEditingController textController = TextEditingController();
-  String submittedText = "";
   Timer? _debounce;
 
   List<AutoFillPlace> _options = [];
@@ -67,40 +67,6 @@ class _SearchPageState extends State<SearchPage> {
     } catch (e) {
       print('Error fetching country data: $e');
     }
-  }
-
-  // Fetch Weather Data
-  Future<Map<String, dynamic>> fetchWeatherData() async {
-    if (submittedText.isEmpty) {
-      return {'empty': true};
-    }
-
-    var dio = Dio();
-    var response = await dio.get(
-      'https://api.openweathermap.org/data/2.5/weather?q=$submittedText&units=metric&appid=${dotenv.env['WEATHER_API_KEY']}',
-    );
-
-    if (response.data != null) {
-      SearchedPlace newPlace = SearchedPlace(
-        placeName:
-            "${response.data['name']}, ${response.data['sys']['country']}",
-        placeTemp: response.data['main']['temp'],
-      );
-
-      // Check if a place with the same name already exists in the searchedPlaces
-      int index = widget.searchedPlaces
-          .indexWhere((place) => place.placeName == newPlace.placeName);
-
-      // If it does, remove it
-      if (index != -1) {
-        widget.searchedPlaces.removeAt(index);
-      }
-
-      // Add the new place to the searchedPlaces
-      widget.searchedPlaces.add(newPlace);
-    }
-
-    return response.data;
   }
 
   String? validateInput(String? value) {
@@ -203,9 +169,10 @@ class _SearchPageState extends State<SearchPage> {
               },
               onSelected: (AutoFillPlace selection) {
                 setState(() {
-                  submittedText = "${selection.name}, ${selection.country}";
+                  widget.setSubmittedText(
+                      "${selection.name}, ${selection.country}");
                   textController.text = "";
-                  weatherDataFuture = fetchWeatherData();
+                  widget.setWeatherDataFuture();
                   FocusManager.instance.primaryFocus?.unfocus();
                 });
               },
@@ -254,9 +221,9 @@ class _SearchPageState extends State<SearchPage> {
                       onTap: () {
                         if (validateInput(textController.text) == null) {
                           setState(() {
-                            submittedText = textController.text;
+                            widget.setSubmittedText(textController.text);
                             textController.text = "";
-                            weatherDataFuture = fetchWeatherData();
+                            widget.setWeatherDataFuture();
                           });
                         }
                         focusNode.unfocus();
@@ -269,9 +236,9 @@ class _SearchPageState extends State<SearchPage> {
                   onFieldSubmitted: (value) {
                     if (validateInput(value) == null) {
                       setState(() {
-                        submittedText = value;
+                        widget.setSubmittedText(value);
                         textController.text = "";
-                        weatherDataFuture = fetchWeatherData();
+                        widget.setWeatherDataFuture();
                       });
                     }
                     focusNode.unfocus();
@@ -281,7 +248,7 @@ class _SearchPageState extends State<SearchPage> {
             );
           }),
           FutureBuilder<Map<String, dynamic>>(
-            future: weatherDataFuture,
+            future: widget.weatherDataFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Container(
