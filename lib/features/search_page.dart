@@ -168,11 +168,12 @@ class _SearchPageState extends State<SearchPage> {
                 );
               },
               onSelected: (AutoFillPlace selection) {
+                widget.setSubmittedText(
+                    "${selection.name}, ${selection.country}");
+                widget.setWeatherDataFuture();
+
                 setState(() {
-                  widget.setSubmittedText(
-                      "${selection.name}, ${selection.country}");
                   textController.text = "";
-                  widget.setWeatherDataFuture();
                   FocusManager.instance.primaryFocus?.unfocus();
                 });
               },
@@ -220,10 +221,11 @@ class _SearchPageState extends State<SearchPage> {
                     suffixIcon: GestureDetector(
                       onTap: () {
                         if (validateInput(textController.text) == null) {
+                          widget.setSubmittedText(textController.text);
+                          widget.setWeatherDataFuture();
+
                           setState(() {
-                            widget.setSubmittedText(textController.text);
                             textController.text = "";
-                            widget.setWeatherDataFuture();
                           });
                         }
                         focusNode.unfocus();
@@ -235,10 +237,11 @@ class _SearchPageState extends State<SearchPage> {
                   // Handle the submission when "Done" is pressed
                   onFieldSubmitted: (value) {
                     if (validateInput(value) == null) {
+                      widget.setSubmittedText(value);
+                      widget.setWeatherDataFuture();
+
                       setState(() {
-                        widget.setSubmittedText(value);
                         textController.text = "";
-                        widget.setWeatherDataFuture();
                       });
                     }
                     focusNode.unfocus();

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cc206_skywatch/provider/bookmark_provider.dart';
 import 'package:provider/provider.dart';
 
-class BookmarksDrawer extends StatefulWidget {
+class BookmarksDrawer extends StatelessWidget {
   final Function() setWeatherDataFuture;
   final Function(String) setSubmittedText;
 
@@ -12,11 +12,6 @@ class BookmarksDrawer extends StatefulWidget {
     required this.setSubmittedText,
   });
 
-  @override
-  State<BookmarksDrawer> createState() => _BookmarksDrawerState();
-}
-
-class _BookmarksDrawerState extends State<BookmarksDrawer> {
   Widget _emptyListState() {
     return ListView(
       padding: EdgeInsets.zero,
@@ -143,10 +138,8 @@ class _BookmarksDrawerState extends State<BookmarksDrawer> {
                       ],
                     ),
                     onTap: () {
-                      setState(() {
-                        widget.setSubmittedText(bookmarkedPlace.placeName);
-                        widget.setWeatherDataFuture();
-                      });
+                      setSubmittedText(bookmarkedPlace.placeName);
+                      setWeatherDataFuture();
                       Navigator.pop(context);
                     },
                   );

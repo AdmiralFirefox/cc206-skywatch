@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../provider/searched_place.dart';
 
-class SearchHistoryDrawer extends StatefulWidget {
+class SearchHistoryDrawer extends StatelessWidget {
   final Function() setWeatherDataFuture;
   final Function(String) setSubmittedText;
 
@@ -12,11 +12,6 @@ class SearchHistoryDrawer extends StatefulWidget {
     required this.setSubmittedText,
   });
 
-  @override
-  State<SearchHistoryDrawer> createState() => _SearchHistoryDrawerState();
-}
-
-class _SearchHistoryDrawerState extends State<SearchHistoryDrawer> {
   Widget _emptyListState() {
     return ListView(
       padding: EdgeInsets.zero,
@@ -122,9 +117,7 @@ class _SearchHistoryDrawerState extends State<SearchHistoryDrawer> {
                             ),
                           ),
                           onTap: () {
-                            setState(() {
-                              provider.clearSearches();
-                            });
+                            provider.clearSearches();
                           },
                         )
                       ],
@@ -176,20 +169,16 @@ class _SearchHistoryDrawerState extends State<SearchHistoryDrawer> {
                             size: 24.0,
                           ),
                           onTap: () {
-                            setState(() {
-                              provider.removeFromSearchHistory(
-                                searchedPlace.placeName,
-                              );
-                            });
+                            provider.removeFromSearchHistory(
+                              searchedPlace.placeName,
+                            );
                           },
                         ),
                       ],
                     ),
                     onTap: () {
-                      setState(() {
-                        widget.setSubmittedText(searchedPlace.placeName);
-                        widget.setWeatherDataFuture();
-                      });
+                      setSubmittedText(searchedPlace.placeName);
+                      setWeatherDataFuture();
                       Navigator.pop(context);
                     },
                   );

@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:cc206_skywatch/provider/bookmark_provider.dart';
 
-class WeatherMainInfo extends StatefulWidget {
+class WeatherMainInfo extends StatelessWidget {
   final Map<String, dynamic> data;
 
   const WeatherMainInfo({
@@ -11,11 +11,6 @@ class WeatherMainInfo extends StatefulWidget {
     required this.data,
   });
 
-  @override
-  State<WeatherMainInfo> createState() => _WeatherMainInfoState();
-}
-
-class _WeatherMainInfoState extends State<WeatherMainInfo> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<BookmarkProvider>(context);
@@ -51,7 +46,7 @@ class _WeatherMainInfoState extends State<WeatherMainInfo> {
                 children: [
                   Expanded(
                     child: Text(
-                      "${widget.data['name']}, ${widget.data['sys']['country']}",
+                      "${data['name']}, ${data['sys']['country']}",
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         color: Colors.white,
@@ -66,7 +61,7 @@ class _WeatherMainInfoState extends State<WeatherMainInfo> {
               ),
               const SizedBox(height: 10),
               Text(
-                formatDate(widget.data['timezone']),
+                formatDate(data['timezone']),
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   color: Colors.white,
@@ -83,7 +78,7 @@ class _WeatherMainInfoState extends State<WeatherMainInfo> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        "${widget.data['main']['temp'].ceil()}°",
+                        "${data['main']['temp'].ceil()}°",
                         style: const TextStyle(
                           color: Colors.white,
                           fontFamily: "Poppins",
@@ -96,7 +91,7 @@ class _WeatherMainInfoState extends State<WeatherMainInfo> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "${widget.data['main']['temp_min'].ceil()}°",
+                            "${data['main']['temp_min'].ceil()}°",
                             style: const TextStyle(
                               color: Color.fromRGBO(129, 183, 228, 1),
                               fontFamily: "Poppins",
@@ -106,7 +101,7 @@ class _WeatherMainInfoState extends State<WeatherMainInfo> {
                           ),
                           const SizedBox(width: 14),
                           Text(
-                            "${widget.data['main']['temp_max'].ceil()}°",
+                            "${data['main']['temp_max'].ceil()}°",
                             style: const TextStyle(
                               color: Color.fromRGBO(253, 128, 104, 1),
                               fontFamily: "Poppins",
@@ -123,12 +118,12 @@ class _WeatherMainInfoState extends State<WeatherMainInfo> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Image.network(
-                        'http://openweathermap.org/img/w/${widget.data['weather'][0]['icon']}.png',
+                        'http://openweathermap.org/img/w/${data['weather'][0]['icon']}.png',
                         width: 50.0,
                       ),
                       const SizedBox(height: 1),
                       Text(
-                        '${widget.data['weather'][0]['description']}',
+                        '${data['weather'][0]['description']}',
                         style: const TextStyle(
                           color: Colors.white,
                           fontFamily: "Poppins",
@@ -148,11 +143,10 @@ class _WeatherMainInfoState extends State<WeatherMainInfo> {
           top: 23,
           child: IconButton(
             onPressed: () {
-              provider.toggleBookmark(
-                  "${widget.data['name']}, ${widget.data['sys']['country']}");
+              provider
+                  .toggleBookmark("${data['name']}, ${data['sys']['country']}");
             },
-            icon: provider.isExist(
-                    "${widget.data['name']}, ${widget.data['sys']['country']}")
+            icon: provider.isExist("${data['name']}, ${data['sys']['country']}")
                 ? const Icon(
                     Icons.favorite,
                     size: 32.0,
