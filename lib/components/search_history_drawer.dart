@@ -186,8 +186,10 @@ class _SearchHistoryDrawerState extends State<SearchHistoryDrawer> {
                       ],
                     ),
                     onTap: () {
-                      widget.setSubmittedText(searchedPlace.placeName);
-                      widget.setWeatherDataFuture();
+                      setState(() {
+                        widget.setSubmittedText(searchedPlace.placeName);
+                        widget.setWeatherDataFuture();
+                      });
                       Navigator.pop(context);
                     },
                   );

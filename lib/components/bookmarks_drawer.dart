@@ -143,8 +143,10 @@ class _BookmarksDrawerState extends State<BookmarksDrawer> {
                       ],
                     ),
                     onTap: () {
-                      widget.setSubmittedText(bookmarkedPlace.placeName);
-                      widget.setWeatherDataFuture();
+                      setState(() {
+                        widget.setSubmittedText(bookmarkedPlace.placeName);
+                        widget.setWeatherDataFuture();
+                      });
                       Navigator.pop(context);
                     },
                   );
