@@ -26,6 +26,7 @@ class SearchedPlaceProvider extends ChangeNotifier {
 
   void removeFromSearchHistory(String placeName) {
     _searchedPlaces.removeWhere((place) => place.placeName == placeName);
+    notifyListeners();
   }
 
   void clearSearches() {
