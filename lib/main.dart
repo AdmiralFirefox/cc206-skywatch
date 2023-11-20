@@ -185,8 +185,14 @@ class _MyAppState extends State<MyApp> {
               ),
             ],
           ),
-          drawer: const BookmarksDrawer(),
-          endDrawer: const SearchHistoryDrawer(),
+          drawer: BookmarksDrawer(
+            setWeatherDataFuture: setWeatherDataFuture,
+            setSubmittedText: setSubmittedText,
+          ),
+          endDrawer: SearchHistoryDrawer(
+            setWeatherDataFuture: setWeatherDataFuture,
+            setSubmittedText: setSubmittedText,
+          ),
         ),
       ),
     );

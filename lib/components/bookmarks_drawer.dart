@@ -3,8 +3,13 @@ import 'package:cc206_skywatch/provider/bookmark_provider.dart';
 import 'package:provider/provider.dart';
 
 class BookmarksDrawer extends StatefulWidget {
+  final Function() setWeatherDataFuture;
+  final Function(String) setSubmittedText;
+
   const BookmarksDrawer({
     super.key,
+    required this.setWeatherDataFuture,
+    required this.setSubmittedText,
   });
 
   @override
@@ -138,6 +143,8 @@ class _BookmarksDrawerState extends State<BookmarksDrawer> {
                       ],
                     ),
                     onTap: () {
+                      widget.setSubmittedText(bookmarkedPlace.placeName);
+                      widget.setWeatherDataFuture();
                       Navigator.pop(context);
                     },
                   );

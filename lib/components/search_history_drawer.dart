@@ -3,7 +3,14 @@ import 'package:provider/provider.dart';
 import '../provider/searched_place.dart';
 
 class SearchHistoryDrawer extends StatefulWidget {
-  const SearchHistoryDrawer({super.key});
+  final Function() setWeatherDataFuture;
+  final Function(String) setSubmittedText;
+
+  const SearchHistoryDrawer({
+    super.key,
+    required this.setWeatherDataFuture,
+    required this.setSubmittedText,
+  });
 
   @override
   State<SearchHistoryDrawer> createState() => _SearchHistoryDrawerState();
@@ -44,7 +51,7 @@ class _SearchHistoryDrawerState extends State<SearchHistoryDrawer> {
         ),
         ListTile(
           title: Text(
-            "No recent Searches",
+            "No recent searches",
             style: TextStyle(
               color: Colors.black,
               fontFamily: "Poppins",
@@ -179,6 +186,8 @@ class _SearchHistoryDrawerState extends State<SearchHistoryDrawer> {
                       ],
                     ),
                     onTap: () {
+                      widget.setSubmittedText(searchedPlace.placeName);
+                      widget.setWeatherDataFuture();
                       Navigator.pop(context);
                     },
                   );
