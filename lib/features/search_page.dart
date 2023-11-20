@@ -4,21 +4,15 @@ import 'package:dio/dio.dart';
 import 'dart:async';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:cc206_skywatch/utils/searched_place.dart';
-import 'package:cc206_skywatch/utils/bookmarked_place.dart';
 import 'package:cc206_skywatch/utils/autofill_place.dart';
 
-//ignore: must_be_immutable
 class SearchPage extends StatefulWidget {
   final List<SearchedPlace> searchedPlaces;
-  final List<BookmarkedPlace> favoritePlaces;
-  bool isFavoritePlaceExist;
 
-  SearchPage(
-      {Key? key,
-      required this.searchedPlaces,
-      required this.favoritePlaces,
-      required this.isFavoritePlaceExist})
-      : super(key: key);
+  const SearchPage({
+    Key? key,
+    required this.searchedPlaces,
+  }) : super(key: key);
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -104,18 +98,6 @@ class _SearchPageState extends State<SearchPage> {
 
       // Add the new place to the searchedPlaces
       widget.searchedPlaces.add(newPlace);
-
-      // Check if place exist in favoritePlaces
-      String placeName =
-          "${response.data['name']}, ${response.data['sys']['country']}";
-      int existingPlaceIndex = widget.favoritePlaces
-          .indexWhere((place) => place.placeName == placeName);
-
-      if (existingPlaceIndex != -1) {
-        widget.isFavoritePlaceExist = true;
-      } else {
-        widget.isFavoritePlaceExist = false;
-      }
     }
 
     return response.data;
@@ -442,13 +424,6 @@ class _SearchPageState extends State<SearchPage> {
                     children: [
                       WeatherMainInfo(
                         data: data!,
-                        favoritePlaces: widget.favoritePlaces,
-                        isFavoritePlaceExist: widget.isFavoritePlaceExist,
-                        onFavoriteToggle: (bool isFavorite) {
-                          setState(() {
-                            widget.isFavoritePlaceExist = isFavorite;
-                          });
-                        },
                       ),
                     ],
                   );

@@ -1,22 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:cc206_skywatch/utils/bookmarked_place.dart';
 import 'package:cc206_skywatch/provider/bookmark_provider.dart';
 
-//ignore: must_be_immutable
 class WeatherMainInfo extends StatefulWidget {
   final Map<String, dynamic> data;
-  final List<BookmarkedPlace> favoritePlaces;
-  bool isFavoritePlaceExist;
-  final Function(bool) onFavoriteToggle;
 
-  WeatherMainInfo({
+  const WeatherMainInfo({
     super.key,
     required this.data,
-    required this.favoritePlaces,
-    required this.isFavoritePlaceExist,
-    required this.onFavoriteToggle,
   });
 
   @override

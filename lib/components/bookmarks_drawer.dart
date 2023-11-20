@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:cc206_skywatch/utils/bookmarked_place.dart';
 import 'package:cc206_skywatch/provider/bookmark_provider.dart';
 import 'package:provider/provider.dart';
 
 class BookmarksDrawer extends StatefulWidget {
-  final List<BookmarkedPlace> favoritePlaces;
-  final Function(BookmarkedPlace) onFavoritePlaceRemoved;
-
   const BookmarksDrawer({
     super.key,
-    required this.favoritePlaces,
-    required this.onFavoritePlaceRemoved,
   });
 
   @override
@@ -110,7 +104,7 @@ class _BookmarksDrawerState extends State<BookmarksDrawer> {
                     ),
                   ),
                 ),
-                ...bookmarkedPlaces.reversed.map((favoritePlace) {
+                ...bookmarkedPlaces.reversed.map((bookmarkedPlace) {
                   return ListTile(
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -118,7 +112,7 @@ class _BookmarksDrawerState extends State<BookmarksDrawer> {
                       children: [
                         Expanded(
                           child: Text(
-                            favoritePlace.placeName,
+                            bookmarkedPlace.placeName,
                             softWrap: true,
                             overflow: TextOverflow.visible,
                             style: const TextStyle(
@@ -138,7 +132,7 @@ class _BookmarksDrawerState extends State<BookmarksDrawer> {
                             size: 28.0,
                           ),
                           onTap: () {
-                            provider.toggleBookmark(favoritePlace.placeName);
+                            provider.toggleBookmark(bookmarkedPlace.placeName);
                           },
                         ),
                       ],

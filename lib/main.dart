@@ -5,7 +5,6 @@ import 'package:cc206_skywatch/components/bookmarks_drawer.dart';
 import 'package:cc206_skywatch/components/search_history_drawer.dart';
 import 'package:cc206_skywatch/features/search_page.dart';
 import 'package:cc206_skywatch/utils/searched_place.dart';
-import 'package:cc206_skywatch/utils/bookmarked_place.dart';
 import 'package:cc206_skywatch/provider/bookmark_provider.dart';
 
 void main() async {
@@ -22,8 +21,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   List<SearchedPlace> searchedPlaces = [];
-  List<BookmarkedPlace> favoritePlaces = [];
-  bool isFavoritePlaceExist = false;
 
   @override
   Widget build(BuildContext context) {
@@ -126,22 +123,12 @@ class _MyAppState extends State<MyApp> {
                   child: SingleChildScrollView(
                     child: SearchPage(
                       searchedPlaces: searchedPlaces,
-                      favoritePlaces: favoritePlaces,
-                      isFavoritePlaceExist: isFavoritePlaceExist,
                     ),
                   ),
                 ),
               ],
             ),
-            drawer: BookmarksDrawer(
-              favoritePlaces: favoritePlaces,
-              onFavoritePlaceRemoved: (favoritePlace) {
-                setState(() {
-                  favoritePlaces.remove(favoritePlace);
-                  isFavoritePlaceExist = false;
-                });
-              },
-            ),
+            drawer: const BookmarksDrawer(),
             endDrawer: SearchHistoryDrawer(searchedPlaces: searchedPlaces),
           ),
         ),
