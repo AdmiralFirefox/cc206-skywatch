@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:cc206_skywatch/utils/bookmarked_place.dart';
-import 'package:uuid/uuid.dart';
+import 'package:cc206_skywatch/provider/bookmark_provider.dart';
 
 //ignore: must_be_immutable
 class WeatherMainInfo extends StatefulWidget {
@@ -25,7 +26,7 @@ class WeatherMainInfo extends StatefulWidget {
 class _WeatherMainInfoState extends State<WeatherMainInfo> {
   @override
   Widget build(BuildContext context) {
-    var uuid = const Uuid();
+    final provider = Provider.of<BookmarkProvider>(context);
 
     String formatDate(int timezoneOffSet) {
       DateTime utcTime = DateTime.now().toUtc();
@@ -155,25 +156,11 @@ class _WeatherMainInfoState extends State<WeatherMainInfo> {
           top: 23,
           child: IconButton(
             onPressed: () {
-              setState(() {
-                String placeName =
-                    "${widget.data['name']}, ${widget.data['sys']['country']}";
-                int existingPlaceIndex = widget.favoritePlaces
-                    .indexWhere((place) => place.placeName == placeName);
-
-                if (existingPlaceIndex != -1) {
-                  widget.favoritePlaces.removeAt(existingPlaceIndex);
-                  widget.onFavoriteToggle(false);
-                } else {
-                  widget.favoritePlaces.add(BookmarkedPlace(
-                    id: uuid.v4(),
-                    placeName: placeName,
-                  ));
-                  widget.onFavoriteToggle(true);
-                }
-              });
+              provider.toggleBookmark(
+                  "${widget.data['name']}, ${widget.data['sys']['country']}");
             },
-            icon: widget.isFavoritePlaceExist
+            icon: provider.isExist(
+                    "${widget.data['name']}, ${widget.data['sys']['country']}")
                 ? const Icon(
                     Icons.favorite,
                     size: 32.0,
