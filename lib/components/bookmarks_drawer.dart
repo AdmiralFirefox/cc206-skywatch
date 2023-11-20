@@ -109,7 +109,7 @@ class _BookmarksDrawerState extends State<BookmarksDrawer> {
                     ),
                   ),
                 ),
-                ...bookmarkedPlaces.reversed.map((bookmarkedPlace) {
+                ...bookmarkedPlaces.map((bookmarkedPlace) {
                   return ListTile(
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
