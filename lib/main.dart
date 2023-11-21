@@ -1,52 +1,32 @@
 import 'package:cc206_skywatch/provider/searched_place.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:provider/provider.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cc206_skywatch/components/bookmarks_drawer.dart';
 import 'package:cc206_skywatch/components/search_history_drawer.dart';
 import 'package:cc206_skywatch/features/search_page.dart';
-import 'package:cc206_skywatch/provider/bookmark_provider.dart';
 
 void main() async {
-  runApp(const MainApp());
+  runApp(const ProviderScope(child: MyApp()));
   await dotenv.load();
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (context) => BookmarkProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => SearchedPlaceProvider(),
-        ),
-      ],
-      child: const MyApp(),
-    );
-  }
-}
-
-class MyApp extends StatefulWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  ConsumerState<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends ConsumerState<MyApp> {
   Future<Map<String, dynamic>> weatherDataFuture =
       Future.value({'empty': true});
   String submittedText = "";
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<SearchedPlaceProvider>(context);
+    final searchHistoryNotifier = ref.read(searchedPlaceProvider.notifier);
 
     const AssetImage backgroundImage =
         AssetImage('assets/images/main-background.jpg');
@@ -63,7 +43,7 @@ class _MyAppState extends State<MyApp> {
       );
 
       if (response.data != null) {
-        provider.addToSearchHistory(
+        searchHistoryNotifier.addToSearchHistory(
           "${response.data['name']}, ${response.data['sys']['country']}",
           response.data['main']['temp'],
         );

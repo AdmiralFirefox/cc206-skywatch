@@ -1,30 +1,22 @@
 import 'package:cc206_skywatch/utils/bookmarked_place.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
-class BookmarkProvider extends ChangeNotifier {
+final bookmarkProvider =
+    StateNotifierProvider<BookmarkNotifier, List<BookmarkedPlace>>(
+        (ref) => BookmarkNotifier());
+
+class BookmarkNotifier extends StateNotifier<List<BookmarkedPlace>> {
   var uuid = const Uuid();
-  final List<BookmarkedPlace> _bookmarkedPlaces = [];
-  List<BookmarkedPlace> get bookmarkedPlaces => _bookmarkedPlaces;
+  BookmarkNotifier() : super([]);
 
   void toggleBookmark(String placeName) {
-    final isExist =
-        _bookmarkedPlaces.any((place) => place.placeName == placeName);
+    final isExist = state.any((place) => place.placeName == placeName);
 
     if (isExist) {
-      _bookmarkedPlaces.removeWhere((place) => place.placeName == placeName);
+      state = state.where((place) => place.placeName != placeName).toList();
     } else {
-      _bookmarkedPlaces.add(
-        BookmarkedPlace(id: uuid.v4(), placeName: placeName),
-      );
+      state = [...state, BookmarkedPlace(id: uuid.v4(), placeName: placeName)];
     }
-
-    notifyListeners();
-  }
-
-  bool isExist(String placeName) {
-    final isExist =
-        _bookmarkedPlaces.any((place) => place.placeName == placeName);
-    return isExist;
   }
 }

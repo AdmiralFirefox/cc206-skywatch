@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cc206_skywatch/provider/bookmark_provider.dart';
 
-class WeatherMainInfo extends StatelessWidget {
+class WeatherMainInfo extends ConsumerWidget {
   final Map<String, dynamic> data;
 
   const WeatherMainInfo({
@@ -12,8 +12,11 @@ class WeatherMainInfo extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final provider = Provider.of<BookmarkProvider>(context);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bookmarkNotifier = ref.read(bookmarkProvider.notifier);
+    final bookmarkedPlaces = ref.watch(bookmarkProvider);
+    bool placeExist = bookmarkedPlaces.any((place) =>
+        place.placeName == "${data['name']}, ${data['sys']['country']}");
 
     String formatDate(int timezoneOffSet) {
       DateTime utcTime = DateTime.now().toUtc();
@@ -143,10 +146,10 @@ class WeatherMainInfo extends StatelessWidget {
           top: 23,
           child: IconButton(
             onPressed: () {
-              provider
+              bookmarkNotifier
                   .toggleBookmark("${data['name']}, ${data['sys']['country']}");
             },
-            icon: provider.isExist("${data['name']}, ${data['sys']['country']}")
+            icon: placeExist
                 ? const Icon(
                     Icons.favorite,
                     size: 32.0,

@@ -1,36 +1,37 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cc206_skywatch/utils/searched_place.dart';
 import 'package:uuid/uuid.dart';
 
-class SearchedPlaceProvider extends ChangeNotifier {
+final searchedPlaceProvider =
+    StateNotifierProvider<SearchedPlaceNotifier, List<SearchedPlace>>(
+        (ref) => SearchedPlaceNotifier());
+
+class SearchedPlaceNotifier extends StateNotifier<List<SearchedPlace>> {
   var uuid = const Uuid();
-  List<SearchedPlace> _searchedPlaces = [];
-  List<SearchedPlace> get searchedPlaces => _searchedPlaces;
+
+  SearchedPlaceNotifier() : super([]);
 
   void addToSearchHistory(String placeName, double placeTemp) {
-    int existingIndex = _searchedPlaces
+    int existingIndex = state
         .indexWhere((searchedPlace) => searchedPlace.placeName == placeName);
 
     // If it exists, remove the existing entry
     if (existingIndex != -1) {
-      _searchedPlaces.removeAt(existingIndex);
+      state = state.where((place) => place.placeName != placeName).toList();
     }
 
     // Add the new entry to the list
-    _searchedPlaces.add(
-      SearchedPlace(id: uuid.v4(), placeName: placeName, placeTemp: placeTemp),
-    );
-
-    notifyListeners();
+    state = [
+      ...state,
+      SearchedPlace(id: uuid.v4(), placeName: placeName, placeTemp: placeTemp)
+    ];
   }
 
   void removeFromSearchHistory(String placeName) {
-    _searchedPlaces.removeWhere((place) => place.placeName == placeName);
-    notifyListeners();
+    state = state.where((place) => place.placeName != placeName).toList();
   }
 
   void clearSearches() {
-    _searchedPlaces = [];
-    notifyListeners();
+    state = [];
   }
 }

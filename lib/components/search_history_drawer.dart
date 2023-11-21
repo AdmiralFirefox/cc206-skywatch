@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../provider/searched_place.dart';
+import 'package:cc206_skywatch/provider/searched_place.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SearchHistoryDrawer extends StatelessWidget {
+class SearchHistoryDrawer extends ConsumerWidget {
   final Function() setWeatherDataFuture;
   final Function(String) setSubmittedText;
 
@@ -60,9 +60,9 @@ class SearchHistoryDrawer extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final provider = Provider.of<SearchedPlaceProvider>(context);
-    final searchedPlaces = provider.searchedPlaces;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final searchHistoryNotifier = ref.read(searchedPlaceProvider.notifier);
+    final searchedPlaces = ref.watch(searchedPlaceProvider);
 
     return Drawer(
       shape: const RoundedRectangleBorder(
@@ -117,7 +117,7 @@ class SearchHistoryDrawer extends StatelessWidget {
                             ),
                           ),
                           onTap: () {
-                            provider.clearSearches();
+                            searchHistoryNotifier.clearSearches();
                           },
                         )
                       ],
@@ -169,7 +169,7 @@ class SearchHistoryDrawer extends StatelessWidget {
                             size: 24.0,
                           ),
                           onTap: () {
-                            provider.removeFromSearchHistory(
+                            searchHistoryNotifier.removeFromSearchHistory(
                               searchedPlace.placeName,
                             );
                           },

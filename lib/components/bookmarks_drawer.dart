@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cc206_skywatch/provider/bookmark_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class BookmarksDrawer extends StatelessWidget {
+class BookmarksDrawer extends ConsumerWidget {
   final Function() setWeatherDataFuture;
   final Function(String) setSubmittedText;
 
@@ -60,9 +60,9 @@ class BookmarksDrawer extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final provider = Provider.of<BookmarkProvider>(context);
-    final bookmarkedPlaces = provider.bookmarkedPlaces;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bookmarkNotifier = ref.read(bookmarkProvider.notifier);
+    final bookmarkedPlaces = ref.watch(bookmarkProvider);
 
     return Drawer(
       shape: const RoundedRectangleBorder(
@@ -132,7 +132,8 @@ class BookmarksDrawer extends StatelessWidget {
                             size: 28.0,
                           ),
                           onTap: () {
-                            provider.toggleBookmark(bookmarkedPlace.placeName);
+                            bookmarkNotifier
+                                .toggleBookmark(bookmarkedPlace.placeName);
                           },
                         ),
                       ],
