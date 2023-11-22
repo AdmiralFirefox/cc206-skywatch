@@ -1,125 +1,195 @@
+import 'package:cc206_skywatch/provider/searched_place.dart';
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cc206_skywatch/components/bookmarks_drawer.dart';
+import 'package:cc206_skywatch/components/search_history_drawer.dart';
+import 'package:cc206_skywatch/features/search_page.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  runApp(const ProviderScope(child: MyApp()));
+  await dotenv.load();
+  tz.initializeTimeZones();
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  ConsumerState<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends ConsumerState<MyApp> {
+  Future<Map<String, dynamic>> weatherDataFuture =
+      Future.value({'empty': true});
+  Future<Map<String, dynamic>> weatherForecastFuture =
+      Future.value({'empty': true});
+  String submittedText = "";
+
   @override
   Widget build(BuildContext context) {
+    final searchHistoryNotifier = ref.read(searchedPlaceProvider.notifier);
+
+    const AssetImage backgroundImage =
+        AssetImage('assets/images/main-background.jpg');
+
+    // Fetch Weather Data
+    Future<Map<String, dynamic>> fetchWeatherData() async {
+      if (submittedText.isEmpty) {
+        return {'empty': true};
+      }
+
+      var dio = Dio();
+      var response = await dio.get(
+        'https://api.openweathermap.org/data/2.5/weather?q=$submittedText&units=metric&appid=${dotenv.env['WEATHER_API_KEY']}',
+      );
+
+      if (response.data != null) {
+        searchHistoryNotifier.addToSearchHistory(
+          "${response.data['name']}, ${response.data['sys']['country']}",
+          response.data['main']['temp'],
+        );
+      }
+
+      return response.data;
+    }
+
+    // Fetch Forecast Data
+    Future<Map<String, dynamic>> fetchForecastData() async {
+      var dio = Dio();
+      var response = await dio.get(
+          "https://api.openweathermap.org/data/2.5/forecast?q=$submittedText&units=metric&appid=${dotenv.env['WEATHER_API_KEY']}");
+
+      return response.data;
+    }
+
+    void setSubmittedText(String textValue) {
+      setState(() {
+        submittedText = textValue;
+      });
+    }
+
+    void setWeatherDataFuture() {
+      setState(() {
+        weatherDataFuture = fetchWeatherData();
+        weatherForecastFuture = fetchForecastData();
+      });
+    }
+
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: "SkyWatch",
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a blue toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.amberAccent),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+      home: DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text(
+              "SkyWatch",
+              style: TextStyle(
+                color: Colors.white,
+                fontFamily: "Poppins",
+                fontWeight: FontWeight.w600,
+              ),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            backgroundColor: const Color.fromRGBO(24, 66, 90, 1),
+            bottom: const PreferredSize(
+              preferredSize: Size.fromHeight(50.0),
+              child: SizedBox(
+                height: 50.0,
+                child: TabBar(
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  indicatorWeight: 4.0,
+                  indicatorColor: Color.fromRGBO(252, 96, 66, 1),
+                  tabs: [
+                    Tab(
+                      icon: Icon(
+                        Icons.home_filled,
+                        color: Colors.white,
+                        size: 26.0,
+                      ),
+                    ),
+                    Tab(
+                      icon: Icon(
+                        Icons.search,
+                        color: Colors.white,
+                        size: 28.0,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ],
+            leading: Builder(
+              builder: (BuildContext context) {
+                return IconButton(
+                  icon: const Icon(
+                    Icons.menu,
+                    color: Colors.white,
+                    size: 30.0,
+                  ),
+                  onPressed: () {
+                    Scaffold.of(context).openDrawer();
+                  },
+                );
+              },
+            ),
+            actions: <Widget>[
+              Builder(
+                builder: (context) {
+                  return IconButton(
+                    icon: const Icon(
+                      Icons.history,
+                      color: Colors.white,
+                      size: 30.0,
+                    ),
+                    onPressed: () {
+                      Scaffold.of(context).openEndDrawer();
+                    },
+                  );
+                },
+              )
+            ],
+          ),
+          body: TabBarView(
+            children: [
+              const Icon(
+                Icons.home,
+                color: Colors.black,
+                size: 50.0,
+              ),
+              Container(
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: backgroundImage,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: SingleChildScrollView(
+                  child: SearchPage(
+                    weatherDataFuture: weatherDataFuture,
+                    weatherForecastFuture: weatherForecastFuture,
+                    setWeatherDataFuture: setWeatherDataFuture,
+                    setSubmittedText: setSubmittedText,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          drawer: BookmarksDrawer(
+            setWeatherDataFuture: setWeatherDataFuture,
+            setSubmittedText: setSubmittedText,
+          ),
+          endDrawer: SearchHistoryDrawer(
+            setWeatherDataFuture: setWeatherDataFuture,
+            setSubmittedText: setSubmittedText,
+          ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
