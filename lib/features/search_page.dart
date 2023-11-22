@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'dart:async';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:cc206_skywatch/components/forecast_carousel.dart';
 import 'package:cc206_skywatch/components/weather_main_info.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:cc206_skywatch/utils/autofill_place.dart';
 
 class SearchPage extends StatefulWidget {
@@ -270,14 +271,11 @@ class _SearchPageState extends State<SearchPage> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          SizedBox(
-                            height: 50.0,
-                            width: 50.0,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                            ),
+                          SpinKitRing(
+                            color: Colors.white,
+                            size: 60.0,
                           ),
-                          SizedBox(height: 35.0),
+                          SizedBox(height: 25.0),
                           Text(
                             "Loading...",
                             style: TextStyle(
