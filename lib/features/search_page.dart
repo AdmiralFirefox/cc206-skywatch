@@ -32,7 +32,7 @@ class _SearchPageState extends State<SearchPage> {
   List<AutoFillPlace> _options = [];
 
   // Fetch Autofill Country Data
-  void fetchCountryData(String place) async {
+  Future<void> fetchCountryData(String place) async {
     String url =
         'https://wft-geo-db.p.rapidapi.com/v1/geo/cities?minPopulation=5000&namePrefix=$place';
 
@@ -136,32 +136,30 @@ class _SearchPageState extends State<SearchPage> {
                           final AutoFillPlace option = options.elementAt(index);
                           return InkWell(
                             onTap: () => onSelected(option),
-                            child: Padding(
+                            child: Container(
                               padding: const EdgeInsets.all(16.0),
-                              child: Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      option.name,
-                                      style: const TextStyle(
-                                        color: Colors.black,
-                                        fontFamily: "Poppins",
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 15.0,
-                                      ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    option.name,
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontFamily: "Poppins",
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 15.0,
                                     ),
-                                    Text(
-                                      "${option.region}, ${option.country}",
-                                      style: const TextStyle(
-                                        color: Colors.black54,
-                                        fontFamily: "Poppins",
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 13.0,
-                                      ),
+                                  ),
+                                  Text(
+                                    "${option.region}, ${option.country}",
+                                    style: const TextStyle(
+                                      color: Colors.black54,
+                                      fontFamily: "Poppins",
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 13.0,
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             ),
                           );
