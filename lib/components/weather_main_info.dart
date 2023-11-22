@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cc206_skywatch/provider/bookmark_provider.dart';
 
@@ -19,11 +20,9 @@ class WeatherMainInfo extends ConsumerWidget {
         place.placeName == "${data['name']}, ${data['sys']['country']}");
 
     String formatDate(int timezoneOffSet) {
-      DateTime utcTime = DateTime.now().toUtc();
-      Duration offset = Duration(seconds: timezoneOffSet);
-      DateTime localTime = utcTime.add(offset);
-      DateFormat dateFormat = DateFormat('h:mm a, MMM d, yyyy');
-      String formattedDate = dateFormat.format(localTime);
+      final utcTime = tz.TZDateTime.now(tz.UTC);
+      final localTime = utcTime.add(Duration(seconds: timezoneOffSet));
+      final formattedDate = DateFormat('h:mm a, MMM d, yyyy').format(localTime);
 
       return formattedDate;
     }

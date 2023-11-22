@@ -1,6 +1,7 @@
 import 'package:cc206_skywatch/provider/searched_place.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:timezone/data/latest.dart' as tz;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cc206_skywatch/components/bookmarks_drawer.dart';
@@ -10,6 +11,7 @@ import 'package:cc206_skywatch/features/search_page.dart';
 void main() async {
   runApp(const ProviderScope(child: MyApp()));
   await dotenv.load();
+  tz.initializeTimeZones();
 }
 
 class MyApp extends ConsumerStatefulWidget {
@@ -21,6 +23,8 @@ class MyApp extends ConsumerStatefulWidget {
 
 class _MyAppState extends ConsumerState<MyApp> {
   Future<Map<String, dynamic>> weatherDataFuture =
+      Future.value({'empty': true});
+  Future<Map<String, dynamic>> weatherForecastFuture =
       Future.value({'empty': true});
   String submittedText = "";
 
@@ -52,6 +56,15 @@ class _MyAppState extends ConsumerState<MyApp> {
       return response.data;
     }
 
+    // Fetch Forecast Data
+    Future<Map<String, dynamic>> fetchForecastData() async {
+      var dio = Dio();
+      var response = await dio.get(
+          "https://api.openweathermap.org/data/2.5/forecast?q=$submittedText&units=metric&appid=${dotenv.env['WEATHER_API_KEY']}");
+
+      return response.data;
+    }
+
     void setSubmittedText(String textValue) {
       setState(() {
         submittedText = textValue;
@@ -61,6 +74,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     void setWeatherDataFuture() {
       setState(() {
         weatherDataFuture = fetchWeatherData();
+        weatherForecastFuture = fetchForecastData();
       });
     }
 
@@ -158,6 +172,7 @@ class _MyAppState extends ConsumerState<MyApp> {
                 child: SingleChildScrollView(
                   child: SearchPage(
                     weatherDataFuture: weatherDataFuture,
+                    weatherForecastFuture: weatherForecastFuture,
                     setWeatherDataFuture: setWeatherDataFuture,
                     setSubmittedText: setSubmittedText,
                   ),

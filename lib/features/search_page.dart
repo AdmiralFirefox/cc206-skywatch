@@ -1,18 +1,21 @@
-import 'package:cc206_skywatch/components/weather_main_info.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'dart:async';
+import 'package:cc206_skywatch/components/forecast_carousel.dart';
+import 'package:cc206_skywatch/components/weather_main_info.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:cc206_skywatch/utils/autofill_place.dart';
 
 class SearchPage extends StatefulWidget {
   final Future<Map<String, dynamic>> weatherDataFuture;
+  final Future<Map<String, dynamic>> weatherForecastFuture;
   final Function() setWeatherDataFuture;
   final Function(String) setSubmittedText;
 
   const SearchPage({
     Key? key,
     required this.weatherDataFuture,
+    required this.weatherForecastFuture,
     required this.setWeatherDataFuture,
     required this.setSubmittedText,
   }) : super(key: key);
@@ -392,8 +395,9 @@ class _SearchPageState extends State<SearchPage> {
                 } else {
                   return Column(
                     children: [
-                      WeatherMainInfo(
-                        data: data!,
+                      WeatherMainInfo(data: data!),
+                      ForecastCarousel(
+                        weatherForecastFuture: widget.weatherForecastFuture,
                       ),
                     ],
                   );
