@@ -22,12 +22,19 @@ class MyApp extends ConsumerStatefulWidget {
   ConsumerState<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends ConsumerState<MyApp> {
+class _MyAppState extends ConsumerState<MyApp> with TickerProviderStateMixin {
   Future<Map<String, dynamic>> weatherDataFuture =
       Future.value({'empty': true});
   Future<Map<String, dynamic>> weatherForecastFuture =
       Future.value({'empty': true});
   String submittedText = "";
+  TabController? _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -157,8 +164,13 @@ class _MyAppState extends ConsumerState<MyApp> {
             ],
           ),
           body: TabBarView(
+            controller: _tabController,
             children: [
-              const HomePage(),
+              HomePage(
+                onButtonPressed: () {
+                  _tabController?.animateTo(1);
+                },
+              ),
               Container(
                 decoration: const BoxDecoration(
                   image: DecorationImage(
@@ -188,5 +200,11 @@ class _MyAppState extends ConsumerState<MyApp> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _tabController?.dispose();
+    super.dispose();
   }
 }
