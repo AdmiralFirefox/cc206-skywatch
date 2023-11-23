@@ -105,15 +105,16 @@ class _MyAppState extends ConsumerState<MyApp> with TickerProviderStateMixin {
               ),
             ),
             backgroundColor: const Color.fromRGBO(24, 66, 90, 1),
-            bottom: const PreferredSize(
-              preferredSize: Size.fromHeight(50.0),
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(50.0),
               child: SizedBox(
                 height: 50.0,
                 child: TabBar(
+                  controller: _tabController,
                   indicatorSize: TabBarIndicatorSize.tab,
                   indicatorWeight: 4.0,
-                  indicatorColor: Color.fromRGBO(252, 96, 66, 1),
-                  tabs: [
+                  indicatorColor: const Color.fromRGBO(252, 96, 66, 1),
+                  tabs: const [
                     Tab(
                       icon: Icon(
                         Icons.home_filled,
