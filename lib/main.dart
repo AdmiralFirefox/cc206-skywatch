@@ -1,5 +1,6 @@
 import 'package:cc206_skywatch/provider/searched_place.dart';
 import 'package:flutter/material.dart';
+import 'package:cc206_skywatch/features/HomePage.dart';
 import 'package:dio/dio.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -79,9 +80,9 @@ class _MyAppState extends ConsumerState<MyApp> {
     }
 
     return MaterialApp(
-      title: "SkyWatch",
+      title: 'Skywatch',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.amberAccent),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
       home: DefaultTabController(
@@ -157,11 +158,7 @@ class _MyAppState extends ConsumerState<MyApp> {
           ),
           body: TabBarView(
             children: [
-              const Icon(
-                Icons.home,
-                color: Colors.black,
-                size: 50.0,
-              ),
+              const HomePage(),
               Container(
                 decoration: const BoxDecoration(
                   image: DecorationImage(
