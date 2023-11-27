@@ -1,3 +1,4 @@
+import 'package:cc206_skywatch/components/weather_exrta_info.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'dart:async';
@@ -395,6 +396,7 @@ class _SearchPageState extends State<SearchPage> {
                       ForecastCarousel(
                         weatherForecastFuture: widget.weatherForecastFuture,
                       ),
+                      WeatherExtraInfo(data: data),
                     ],
                   );
                 }
