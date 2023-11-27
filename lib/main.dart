@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'dart:async';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cc206_skywatch/provider/location_provider.dart';
 import 'package:cc206_skywatch/provider/searched_place.dart';
 import 'package:cc206_skywatch/features/HomePage.dart';
 import 'package:cc206_skywatch/features/search_page.dart';
@@ -28,6 +28,7 @@ class _MyAppState extends ConsumerState<MyApp> with TickerProviderStateMixin {
       Future.value({'empty': true});
   Future<Map<String, dynamic>> weatherForecastFuture =
       Future.value({'empty': true});
+  Future<Map<String, dynamic>> weatherAQIFuture = Future.value({'empty': true});
   String submittedText = "";
   TabController? _tabController;
 
@@ -40,10 +41,19 @@ class _MyAppState extends ConsumerState<MyApp> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final searchHistoryNotifier = ref.read(searchedPlaceProvider.notifier);
-    final locationNotifier = ref.read(locationProvider.notifier);
 
     const AssetImage backgroundImage =
         AssetImage('assets/images/main-background.jpg');
+
+    // Fetch AQI Data
+    Future<Map<String, dynamic>> fetchAQIData(
+        double longitude, double latitude) async {
+      var dio = Dio();
+      var response = await dio.get(
+          "https://api.openweathermap.org/data/2.5/air_pollution?lat=$latitude&lon=$longitude&appid=${dotenv.env['WEATHER_API_KEY']}");
+
+      return response.data;
+    }
 
     // Fetch Weather Data
     Future<Map<String, dynamic>> fetchWeatherData() async {
@@ -62,10 +72,10 @@ class _MyAppState extends ConsumerState<MyApp> with TickerProviderStateMixin {
           response.data['main']['temp'],
         );
 
-        locationNotifier.updateLocation(
-          response.data['coord']['lon'],
-          response.data['coord']['lat'],
-        );
+        setState(() {
+          weatherAQIFuture = fetchAQIData(
+              response.data['coord']['lon'], response.data['coord']['lat']);
+        });
       }
 
       return response.data;
@@ -192,6 +202,7 @@ class _MyAppState extends ConsumerState<MyApp> with TickerProviderStateMixin {
                     weatherForecastFuture: weatherForecastFuture,
                     setWeatherDataFuture: setWeatherDataFuture,
                     setSubmittedText: setSubmittedText,
+                    weatherAQIFuture: weatherAQIFuture,
                   ),
                 ),
               ),

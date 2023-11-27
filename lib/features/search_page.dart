@@ -13,6 +13,7 @@ class SearchPage extends StatefulWidget {
   final Future<Map<String, dynamic>> weatherForecastFuture;
   final Function() setWeatherDataFuture;
   final Function(String) setSubmittedText;
+  final Future<Map<String, dynamic>> weatherAQIFuture;
 
   const SearchPage({
     Key? key,
@@ -20,6 +21,7 @@ class SearchPage extends StatefulWidget {
     required this.weatherForecastFuture,
     required this.setWeatherDataFuture,
     required this.setSubmittedText,
+    required this.weatherAQIFuture,
   }) : super(key: key);
 
   @override
@@ -396,7 +398,10 @@ class _SearchPageState extends State<SearchPage> {
                       ForecastCarousel(
                         weatherForecastFuture: widget.weatherForecastFuture,
                       ),
-                      WeatherExtraInfo(data: data),
+                      WeatherExtraInfo(
+                        data: data,
+                        weatherAQIFuture: widget.weatherAQIFuture,
+                      ),
                     ],
                   );
                 }

@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:cc206_skywatch/components/aqi_info.dart';
 
 class WeatherExtraInfo extends StatelessWidget {
   final Map<String, dynamic> data;
+  final Future<Map<String, dynamic>> weatherAQIFuture;
 
-  const WeatherExtraInfo({super.key, required this.data});
+  const WeatherExtraInfo({
+    super.key,
+    required this.data,
+    required this.weatherAQIFuture,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -103,6 +109,7 @@ class WeatherExtraInfo extends StatelessWidget {
             title: "Cloudiness",
             value: "${data["clouds"]["all"]}%",
           ),
+          AQIInfo(weatherAQIFuture: weatherAQIFuture),
         ],
       ),
     );
