@@ -11,6 +11,23 @@ class AQIInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Color getContainerColor(int aqi) {
+      switch (aqi) {
+        case 1:
+          return const Color.fromRGBO(88, 218, 171, 1);
+        case 2:
+          return const Color.fromRGBO(88, 218, 171, 1);
+        case 3:
+          return const Color.fromRGBO(238, 230, 87, 1);
+        case 4:
+          return const Color.fromRGBO(252, 185, 65, 1);
+        case 5:
+          return const Color.fromRGBO(252, 96, 66, 1);
+        default:
+          return const Color.fromRGBO(218, 243, 247, 1);
+      }
+    }
+
     return FutureBuilder<Map<String, dynamic>>(
       future: weatherAQIFuture,
       builder: (context, snapshot) {
@@ -79,7 +96,7 @@ class AQIInfo extends StatelessWidget {
 
           return Container(
             decoration: BoxDecoration(
-              color: const Color.fromRGBO(218, 243, 247, 1),
+              color: getContainerColor(data!["list"][0]["main"]["aqi"]),
               borderRadius: BorderRadius.circular(5.0),
             ),
             padding: const EdgeInsets.all(5.0),
@@ -98,7 +115,7 @@ class AQIInfo extends StatelessWidget {
                 ),
                 const SizedBox(height: 5.0),
                 Text(
-                  data!["list"][0]["main"]["aqi"].toString(),
+                  data["list"][0]["main"]["aqi"].toString(),
                   style: const TextStyle(
                     color: Colors.black,
                     fontFamily: "Poppins",
