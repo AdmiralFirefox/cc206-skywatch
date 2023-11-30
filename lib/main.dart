@@ -42,6 +42,7 @@ class _MyAppState extends ConsumerState<MyApp> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    var tabTheme = Theme.of(context);
     final searchHistoryNotifier = ref.read(searchedPlaceProvider.notifier);
     final themeNotifier = ref.read(themeProvider.notifier);
     final theme = ref.watch(themeProvider);
@@ -163,27 +164,34 @@ class _MyAppState extends ConsumerState<MyApp> with TickerProviderStateMixin {
               preferredSize: const Size.fromHeight(50.0),
               child: SizedBox(
                 height: 50.0,
-                child: TabBar(
-                  controller: _tabController,
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  indicatorWeight: 4.0,
-                  indicatorColor: const Color.fromRGBO(252, 96, 66, 1),
-                  tabs: const [
-                    Tab(
-                      icon: Icon(
-                        Icons.home_filled,
-                        color: Colors.white,
-                        size: 26.0,
-                      ),
+                child: Theme(
+                  data: tabTheme.copyWith(
+                    colorScheme: tabTheme.colorScheme.copyWith(
+                      surfaceVariant: Colors.transparent,
                     ),
-                    Tab(
-                      icon: Icon(
-                        Icons.search,
-                        color: Colors.white,
-                        size: 28.0,
+                  ),
+                  child: TabBar(
+                    controller: _tabController,
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    indicatorWeight: 4.0,
+                    indicatorColor: const Color.fromRGBO(252, 96, 66, 1),
+                    tabs: const [
+                      Tab(
+                        icon: Icon(
+                          Icons.home_filled,
+                          color: Colors.white,
+                          size: 26.0,
+                        ),
                       ),
-                    ),
-                  ],
+                      Tab(
+                        icon: Icon(
+                          Icons.search,
+                          color: Colors.white,
+                          size: 28.0,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
