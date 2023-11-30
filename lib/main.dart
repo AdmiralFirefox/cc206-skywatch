@@ -142,9 +142,11 @@ class _MyAppState extends ConsumerState<MyApp> with TickerProviderStateMixin {
     }
 
     return MaterialApp(
-      title: 'Skywatch',
+      title: 'SkyWatch',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color.fromRGBO(24, 66, 90, 1),
+        ),
         useMaterial3: true,
       ),
       home: DefaultTabController(

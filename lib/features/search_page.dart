@@ -108,11 +108,11 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     Color themeColor() {
       switch (theme) {
         case "day":
-          return const Color.fromRGBO(24, 66, 90, 75);
+          return const Color.fromRGBO(24, 66, 90, 0.8);
         case "night":
-          return const Color.fromRGBO(74, 69, 91, 75);
+          return const Color.fromRGBO(74, 69, 91, 0.75);
         default:
-          return const Color.fromRGBO(24, 66, 90, 75);
+          return const Color.fromRGBO(24, 66, 90, 0.8);
       }
     }
 
