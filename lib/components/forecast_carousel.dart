@@ -3,8 +3,10 @@ import 'package:intl/intl.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cc206_skywatch/provider/theme_provider.dart';
 
-class ForecastCarousel extends StatelessWidget {
+class ForecastCarousel extends ConsumerWidget {
   final Future<Map<String, dynamic>> weatherForecastFuture;
 
   const ForecastCarousel({
@@ -13,7 +15,20 @@ class ForecastCarousel extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(themeProvider);
+
+    Color themeColor() {
+      switch (theme) {
+        case "day":
+          return const Color.fromRGBO(24, 66, 90, 75);
+        case "night":
+          return const Color.fromRGBO(74, 69, 91, 75);
+        default:
+          return const Color.fromRGBO(24, 66, 90, 75);
+      }
+    }
+
     String dateFormat(int locationDateValue, int timeZoneOffSetValue) {
       final timestamp = locationDateValue;
       final timeZoneOffset = timeZoneOffSetValue;
@@ -44,7 +59,7 @@ class ForecastCarousel extends StatelessWidget {
             margin: const EdgeInsets.only(top: 20.0),
             padding: const EdgeInsets.only(top: 40.0, bottom: 35.0),
             decoration: BoxDecoration(
-              color: const Color.fromRGBO(24, 66, 90, 75),
+              color: themeColor(),
               borderRadius: BorderRadius.circular(5.0),
             ),
             child: const Row(
@@ -66,7 +81,7 @@ class ForecastCarousel extends StatelessWidget {
           return Container(
             margin: const EdgeInsets.only(top: 20.0),
             decoration: BoxDecoration(
-              color: const Color.fromRGBO(252, 96, 66, 1),
+              color: themeColor(),
               borderRadius: BorderRadius.circular(5.0),
             ),
             padding: const EdgeInsets.only(
@@ -112,7 +127,7 @@ class ForecastCarousel extends StatelessWidget {
               right: 20.0,
             ),
             decoration: BoxDecoration(
-              color: const Color.fromRGBO(24, 66, 90, 75),
+              color: themeColor(),
               borderRadius: BorderRadius.circular(5.0),
             ),
             child: SizedBox(

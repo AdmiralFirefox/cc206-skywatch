@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cc206_skywatch/provider/theme_provider.dart';
 import 'package:cc206_skywatch/components/aqi_info.dart';
 
-class WeatherExtraInfo extends StatelessWidget {
+class WeatherExtraInfo extends ConsumerWidget {
   final Map<String, dynamic> data;
   final Future<Map<String, dynamic>> weatherAQIFuture;
 
@@ -14,7 +16,20 @@ class WeatherExtraInfo extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(themeProvider);
+
+    Color themeColor() {
+      switch (theme) {
+        case "day":
+          return const Color.fromRGBO(24, 66, 90, 75);
+        case "night":
+          return const Color.fromRGBO(74, 69, 91, 75);
+        default:
+          return const Color.fromRGBO(24, 66, 90, 75);
+      }
+    }
+
     String timeFormat(int locationDateValue, int timeZoneOffSetValue) {
       final timestamp = locationDateValue;
       final timeZoneOffset = timeZoneOffSetValue;
@@ -35,7 +50,7 @@ class WeatherExtraInfo extends StatelessWidget {
         left: 20.0,
       ),
       decoration: BoxDecoration(
-        color: const Color.fromRGBO(24, 66, 90, 75),
+        color: themeColor(),
         borderRadius: BorderRadius.circular(5.0),
       ),
       child: GridView(

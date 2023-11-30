@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'dart:async';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:cc206_skywatch/utils/autofill_place.dart';
+import 'package:cc206_skywatch/provider/theme_provider.dart';
 import 'package:cc206_skywatch/components/forecast_carousel.dart';
 import 'package:cc206_skywatch/components/weather_main_info.dart';
 import 'package:cc206_skywatch/components/weather_extra_info.dart';
 
-class SearchPage extends StatefulWidget {
+class SearchPage extends ConsumerStatefulWidget {
   final Future<Map<String, dynamic>> weatherDataFuture;
   final Future<Map<String, dynamic>> weatherForecastFuture;
   final Function() setWeatherDataFuture;
@@ -25,10 +27,10 @@ class SearchPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<SearchPage> createState() => _SearchPageState();
+  ConsumerState<SearchPage> createState() => _SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> {
+class _SearchPageState extends ConsumerState<SearchPage> {
   TextEditingController textController = TextEditingController();
   Timer? _debounce;
 
@@ -101,6 +103,19 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ref.watch(themeProvider);
+
+    Color themeColor() {
+      switch (theme) {
+        case "day":
+          return const Color.fromRGBO(24, 66, 90, 75);
+        case "night":
+          return const Color.fromRGBO(74, 69, 91, 75);
+        default:
+          return const Color.fromRGBO(24, 66, 90, 75);
+      }
+    }
+
     return Container(
       padding: const EdgeInsets.only(
         left: 30,
@@ -263,7 +278,7 @@ class _SearchPageState extends State<SearchPage> {
                   margin: const EdgeInsets.only(top: 20.0),
                   padding: const EdgeInsets.only(top: 40.0, bottom: 35.0),
                   decoration: BoxDecoration(
-                    color: const Color.fromRGBO(24, 66, 90, 75),
+                    color: themeColor(),
                     borderRadius: BorderRadius.circular(5.0),
                   ),
                   child: const Row(
@@ -295,7 +310,7 @@ class _SearchPageState extends State<SearchPage> {
                 return Container(
                   margin: const EdgeInsets.only(top: 20.0),
                   decoration: BoxDecoration(
-                    color: const Color.fromRGBO(24, 66, 90, 75),
+                    color: themeColor(),
                     borderRadius: BorderRadius.circular(5.0),
                   ),
                   padding: const EdgeInsets.only(
@@ -352,7 +367,7 @@ class _SearchPageState extends State<SearchPage> {
                       left: 17.0,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color.fromRGBO(24, 66, 90, 75),
+                      color: themeColor(),
                       borderRadius: BorderRadius.circular(5.0),
                     ),
                     child: const Row(
