@@ -5,11 +5,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class BookmarksDrawer extends ConsumerWidget {
   final Function() setWeatherDataFuture;
   final Function(String) setSubmittedText;
+  final VoidCallback onTilePressed;
 
   const BookmarksDrawer({
     super.key,
     required this.setWeatherDataFuture,
     required this.setSubmittedText,
+    required this.onTilePressed,
   });
 
   Widget _emptyListState() {
@@ -142,6 +144,7 @@ class BookmarksDrawer extends ConsumerWidget {
                       setSubmittedText(bookmarkedPlace.placeName);
                       setWeatherDataFuture();
                       Navigator.pop(context);
+                      onTilePressed();
                     },
                   );
                 }),

@@ -1,18 +1,21 @@
-import 'package:cc206_skywatch/provider/searched_place.dart';
 import 'package:flutter/material.dart';
-import 'package:cc206_skywatch/features/HomePage.dart';
 import 'package:dio/dio.dart';
-import 'package:timezone/data/latest.dart' as tz;
+import 'dart:async';
+import 'package:timezone/data/latest.dart' as tz_init;
+import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cc206_skywatch/provider/searched_place.dart';
+import 'package:cc206_skywatch/provider/theme_provider.dart';
+import 'package:cc206_skywatch/features/HomePage.dart';
+import 'package:cc206_skywatch/features/search_page.dart';
 import 'package:cc206_skywatch/components/bookmarks_drawer.dart';
 import 'package:cc206_skywatch/components/search_history_drawer.dart';
-import 'package:cc206_skywatch/features/search_page.dart';
 
 void main() async {
   runApp(const ProviderScope(child: MyApp()));
   await dotenv.load();
-  tz.initializeTimeZones();
+  tz_init.initializeTimeZones();
 }
 
 class MyApp extends ConsumerStatefulWidget {
@@ -27,6 +30,7 @@ class _MyAppState extends ConsumerState<MyApp> with TickerProviderStateMixin {
       Future.value({'empty': true});
   Future<Map<String, dynamic>> weatherForecastFuture =
       Future.value({'empty': true});
+  Future<Map<String, dynamic>> weatherAQIFuture = Future.value({'empty': true});
   String submittedText = "";
   TabController? _tabController;
 
@@ -38,10 +42,54 @@ class _MyAppState extends ConsumerState<MyApp> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    var tabTheme = Theme.of(context);
     final searchHistoryNotifier = ref.read(searchedPlaceProvider.notifier);
+    final themeNotifier = ref.read(themeProvider.notifier);
+    final theme = ref.watch(themeProvider);
 
-    const AssetImage backgroundImage =
-        AssetImage('assets/images/main-background.jpg');
+    AssetImage backgroundImage = AssetImage(theme == "day"
+        ? 'assets/images/day-background.jpg'
+        : theme == "night"
+            ? 'assets/images/night-background.jpg'
+            : 'assets/images/main-background.jpg');
+
+    // Check day/night cycle
+    void checkDayNightCycle(int timeZoneOffSetValue) {
+      int currentTime = tz.TZDateTime.now(tz.local).millisecondsSinceEpoch;
+      currentTime = (currentTime - (currentTime % 1000)) ~/ 1000;
+
+      final int timestamp = currentTime;
+      final int timeZoneOffset = timeZoneOffSetValue;
+
+      tz.TZDateTime date =
+          tz.TZDateTime.fromMillisecondsSinceEpoch(tz.local, timestamp * 1000);
+
+      final int localTimestamp =
+          timestamp + date.timeZoneOffset.inSeconds + timeZoneOffset;
+
+      tz.TZDateTime localDate = tz.TZDateTime.fromMillisecondsSinceEpoch(
+          tz.local, localTimestamp * 1000);
+
+      final int localHour = localDate.hour;
+
+      if (localHour >= 6 && localHour < 18) {
+        themeNotifier.changeTheme("day");
+      } else if (localHour >= 18 || localHour < 6) {
+        themeNotifier.changeTheme("night");
+      } else {
+        themeNotifier.changeTheme("");
+      }
+    }
+
+    // Fetch AQI Data
+    Future<Map<String, dynamic>> fetchAQIData(
+        double longitude, double latitude) async {
+      var dio = Dio();
+      var response = await dio.get(
+          "https://api.openweathermap.org/data/2.5/air_pollution?lat=$latitude&lon=$longitude&appid=${dotenv.env['WEATHER_API_KEY']}");
+
+      return response.data;
+    }
 
     // Fetch Weather Data
     Future<Map<String, dynamic>> fetchWeatherData() async {
@@ -59,6 +107,13 @@ class _MyAppState extends ConsumerState<MyApp> with TickerProviderStateMixin {
           "${response.data['name']}, ${response.data['sys']['country']}",
           response.data['main']['temp'],
         );
+
+        setState(() {
+          weatherAQIFuture = fetchAQIData(
+              response.data['coord']['lon'], response.data['coord']['lat']);
+        });
+
+        checkDayNightCycle(response.data["timezone"]);
       }
 
       return response.data;
@@ -87,9 +142,11 @@ class _MyAppState extends ConsumerState<MyApp> with TickerProviderStateMixin {
     }
 
     return MaterialApp(
-      title: 'Skywatch',
+      title: 'SkyWatch',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color.fromRGBO(24, 66, 90, 1),
+        ),
         useMaterial3: true,
       ),
       home: DefaultTabController(
@@ -109,27 +166,34 @@ class _MyAppState extends ConsumerState<MyApp> with TickerProviderStateMixin {
               preferredSize: const Size.fromHeight(50.0),
               child: SizedBox(
                 height: 50.0,
-                child: TabBar(
-                  controller: _tabController,
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  indicatorWeight: 4.0,
-                  indicatorColor: const Color.fromRGBO(252, 96, 66, 1),
-                  tabs: const [
-                    Tab(
-                      icon: Icon(
-                        Icons.home_filled,
-                        color: Colors.white,
-                        size: 26.0,
-                      ),
+                child: Theme(
+                  data: tabTheme.copyWith(
+                    colorScheme: tabTheme.colorScheme.copyWith(
+                      surfaceVariant: Colors.transparent,
                     ),
-                    Tab(
-                      icon: Icon(
-                        Icons.search,
-                        color: Colors.white,
-                        size: 28.0,
+                  ),
+                  child: TabBar(
+                    controller: _tabController,
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    indicatorWeight: 4.0,
+                    indicatorColor: const Color.fromRGBO(252, 96, 66, 1),
+                    tabs: const [
+                      Tab(
+                        icon: Icon(
+                          Icons.home_filled,
+                          color: Colors.white,
+                          size: 26.0,
+                        ),
                       ),
-                    ),
-                  ],
+                      Tab(
+                        icon: Icon(
+                          Icons.search,
+                          color: Colors.white,
+                          size: 28.0,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -173,7 +237,7 @@ class _MyAppState extends ConsumerState<MyApp> with TickerProviderStateMixin {
                 },
               ),
               Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   image: DecorationImage(
                     image: backgroundImage,
                     fit: BoxFit.cover,
@@ -185,6 +249,7 @@ class _MyAppState extends ConsumerState<MyApp> with TickerProviderStateMixin {
                     weatherForecastFuture: weatherForecastFuture,
                     setWeatherDataFuture: setWeatherDataFuture,
                     setSubmittedText: setSubmittedText,
+                    weatherAQIFuture: weatherAQIFuture,
                   ),
                 ),
               ),
@@ -193,10 +258,16 @@ class _MyAppState extends ConsumerState<MyApp> with TickerProviderStateMixin {
           drawer: BookmarksDrawer(
             setWeatherDataFuture: setWeatherDataFuture,
             setSubmittedText: setSubmittedText,
+            onTilePressed: () {
+              _tabController?.animateTo(1);
+            },
           ),
           endDrawer: SearchHistoryDrawer(
             setWeatherDataFuture: setWeatherDataFuture,
             setSubmittedText: setSubmittedText,
+            onTilePressed: () {
+              _tabController?.animateTo(1);
+            },
           ),
         ),
       ),
