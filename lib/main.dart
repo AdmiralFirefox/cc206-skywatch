@@ -12,9 +12,9 @@ import 'package:cc206_skywatch/features/search_page.dart';
 import 'package:cc206_skywatch/components/bookmarks_drawer.dart';
 import 'package:cc206_skywatch/components/search_history_drawer.dart';
 
-void main() async {
+Future main() async {
   runApp(const ProviderScope(child: MyApp()));
-  await dotenv.load();
+  await dotenv.load(fileName: ".env");
   tz_init.initializeTimeZones();
 }
 
