@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cc206_skywatch/provider/theme_provider.dart';
 
@@ -171,8 +172,18 @@ class ForecastCarousel extends ConsumerWidget {
                               fontSize: 13.0,
                             ),
                           ),
-                          Image.network(
-                            'http://openweathermap.org/img/w/${place['weather'][0]['icon']}.png',
+                          CachedNetworkImage(
+                            imageUrl:
+                                "http://openweathermap.org/img/w/${place['weather'][0]['icon']}.png",
+                            placeholder: (context, url) => const SpinKitRing(
+                              color: Colors.white,
+                              size: 42.0,
+                            ),
+                            errorWidget: (context, url, error) => const Icon(
+                              Icons.error_rounded,
+                              color: Colors.white,
+                              size: 35.0,
+                            ),
                             width: 48.0,
                           ),
                           Text(
