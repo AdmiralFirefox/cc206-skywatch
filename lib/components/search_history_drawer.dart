@@ -5,11 +5,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class SearchHistoryDrawer extends ConsumerWidget {
   final Function() setWeatherDataFuture;
   final Function(String) setSubmittedText;
+  final VoidCallback onTilePressed;
 
   const SearchHistoryDrawer({
     super.key,
     required this.setWeatherDataFuture,
     required this.setSubmittedText,
+    required this.onTilePressed,
   });
 
   Widget _emptyListState() {
@@ -180,6 +182,7 @@ class SearchHistoryDrawer extends ConsumerWidget {
                       setSubmittedText(searchedPlace.placeName);
                       setWeatherDataFuture();
                       Navigator.pop(context);
+                      onTilePressed();
                     },
                   );
                 }),

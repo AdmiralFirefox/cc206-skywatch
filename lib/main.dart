@@ -258,10 +258,16 @@ class _MyAppState extends ConsumerState<MyApp> with TickerProviderStateMixin {
           drawer: BookmarksDrawer(
             setWeatherDataFuture: setWeatherDataFuture,
             setSubmittedText: setSubmittedText,
+            onTilePressed: () {
+              _tabController?.animateTo(1);
+            },
           ),
           endDrawer: SearchHistoryDrawer(
             setWeatherDataFuture: setWeatherDataFuture,
             setSubmittedText: setSubmittedText,
+            onTilePressed: () {
+              _tabController?.animateTo(1);
+            },
           ),
         ),
       ),
