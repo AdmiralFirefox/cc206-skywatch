@@ -17,7 +17,7 @@ class HomePage extends StatelessWidget {
       child: SingleChildScrollView(
         child: Container(
           decoration: BoxDecoration(
-            color: const Color.fromRGBO(94, 121, 122, 0.7),
+            color: const Color.fromRGBO(24, 66, 90, 0.75),
             borderRadius: BorderRadius.circular(10),
           ),
           padding: const EdgeInsets.all(25.0),
@@ -32,20 +32,25 @@ class HomePage extends StatelessWidget {
             children: [
               Image.asset(
                 ('assets/images/web-logo.png'),
-                width: 50.0,
-                height: 50.0,
+                width: 57.0,
+                height: 57.0,
               ),
               const SizedBox(
-                height: 20.0,
+                height: 23.0,
               ),
               const Text(
-                "SkyWatch: Global Weather Monitoring System \n",
+                "SkyWatch: Global Weather Monitoring System",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 15.5,
-                  fontWeight: FontWeight.bold,
+                  fontFamily: "Poppins",
+                  fontWeight: FontWeight.w700,
+                  fontSize: 23.0,
+                  height: 1.25,
                 ),
+              ),
+              const SizedBox(
+                height: 25.0,
               ),
               const Text(
                 "A weather application to know the weather of a specific place, either be a city or country.",
@@ -54,19 +59,15 @@ class HomePage extends StatelessWidget {
                   color: Colors.white,
                   fontFamily: "Poppins",
                   fontWeight: FontWeight.w500,
-                  fontSize: 13.0,
+                  fontSize: 15.0,
+                  height: 1.40,
                 ),
               ),
               const SizedBox(
-                height: 20.0,
+                height: 27.0,
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  textStyle: const TextStyle(
-                    fontFamily: "Poppins",
-                    fontWeight: FontWeight.w500,
-                    fontSize: 13.0,
-                  ),
                   backgroundColor: const Color.fromRGBO(252, 96, 66, 1),
                 ),
                 onPressed: () {
@@ -76,8 +77,8 @@ class HomePage extends StatelessWidget {
                   'Start Searching',
                   style: TextStyle(
                     fontFamily: "Poppins",
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.w600,
                     color: Colors.white,
                   ),
                 ),
