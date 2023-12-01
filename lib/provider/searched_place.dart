@@ -1,15 +1,29 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cc206_skywatch/utils/searched_place.dart';
+import 'dart:convert';
 import 'package:uuid/uuid.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cc206_skywatch/utils/searched_place.dart';
 
 final searchedPlaceProvider =
     StateNotifierProvider<SearchedPlaceNotifier, List<SearchedPlace>>(
         (ref) => SearchedPlaceNotifier());
 
 class SearchedPlaceNotifier extends StateNotifier<List<SearchedPlace>> {
+  late SharedPreferences prefs;
   var uuid = const Uuid();
+  SearchedPlaceNotifier() : super([]) {
+    _init();
+  }
 
-  SearchedPlaceNotifier() : super([]);
+  Future _init() async {
+    prefs = await SharedPreferences.getInstance();
+    var searchedPlaces = prefs.getString("searchedPlaces");
+    state = searchedPlaces != null
+        ? (jsonDecode(searchedPlaces) as List)
+            .map((i) => SearchedPlace.fromJson(i))
+            .toList()
+        : [];
+  }
 
   void addToSearchHistory(String placeName, double placeTemp) {
     int existingIndex = state
@@ -25,13 +39,22 @@ class SearchedPlaceNotifier extends StateNotifier<List<SearchedPlace>> {
       ...state,
       SearchedPlace(id: uuid.v4(), placeName: placeName, placeTemp: placeTemp)
     ];
+
+    prefs.setString("searchedPlaces",
+        jsonEncode(state.map((place) => place.toJson()).toList()));
   }
 
   void removeFromSearchHistory(String placeName) {
     state = state.where((place) => place.placeName != placeName).toList();
+
+    prefs.setString("searchedPlaces",
+        jsonEncode(state.map((place) => place.toJson()).toList()));
   }
 
   void clearSearches() {
     state = [];
+
+    prefs.setString("searchedPlaces",
+        jsonEncode(state.map((place) => place.toJson()).toList()));
   }
 }
