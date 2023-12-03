@@ -133,6 +133,7 @@ class ForecastCarousel extends ConsumerWidget {
             ),
             child: SizedBox(
               width: MediaQuery.of(context).size.width,
+              height: 160.0,
               child: CarouselSlider(
                 options: CarouselOptions(
                   viewportFraction: 0.34,
